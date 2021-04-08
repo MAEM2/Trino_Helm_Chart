@@ -22,8 +22,8 @@ server:
         heapRegionSize: "32M"
 
 image:
-  repository: prestosql/presto
-  tag: 329
+  repository: trinodb/trino
+  tag: 354
   pullPolicy: IfNotPresent
   securityContext:
     runAsUser: 1000

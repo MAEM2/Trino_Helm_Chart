@@ -27,6 +27,9 @@ spec:
         - name: config-volume
           configMap:
             name: {{ template "presto.worker" . }}
+        - name: config-volume-hive
+          configMap:
+            name: {{ template "presto.hive" . }}
       containers:
         - name: {{ .Chart.Name }}-worker
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -34,6 +37,19 @@ spec:
           volumeMounts:
             - mountPath: {{ .Values.server.config.path }}
               name: config-volume
+            - mountPath: {{ .Values.server.config.pathCatalog }}
+              name: config-volume-hive
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: dmsa-poc-storagegrid-access-key
+                  key: s3-access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: dmsa-poc-storagegrid-access-key
+                  key: s3-secret-key
           livenessProbe:
             exec:
               command:

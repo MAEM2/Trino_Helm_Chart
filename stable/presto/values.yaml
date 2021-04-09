@@ -9,6 +9,7 @@ server:
       level: INFO
   config:
     path: /usr/lib/presto/etc
+    pathCatalog: /usr/lib/presto/etc/catalog
     http:
       port: 8080
     query:
@@ -49,3 +50,14 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+hive:
+  metastore:
+    uri: thrift://metastore:9083
+  s3:
+    endpoint: 127.0.0.1
+    ssl:
+      enabled: false
+    max-connections: 100
+    aws-access-key: 
+    aws-secret-key: 

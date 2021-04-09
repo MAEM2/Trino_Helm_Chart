@@ -47,6 +47,12 @@ spec:
               containerPort: {{ .Values.server.config.http.port }}
               protocol: TCP
           env:
+            - name: JAVA_OPTS
+              value: -Dcom.amazonaws.sdk.disableCertChecking=true
+            - name: JAVA_TOOL_OPTIONS
+              value: -Dcom.amazonaws.sdk.disableCertChecking=true
+            - name: _JAVA_OPTIONS
+              value: -Dcom.amazonaws.sdk.disableCertChecking=true
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

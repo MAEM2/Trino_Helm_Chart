@@ -39,6 +39,6 @@ data:
     discovery.uri=http://localhost:{{ .Values.server.config.http.port }}
 
   log.properties: |
-    io.prestosql={{ .Values.server.log.presto.level }}
+    io.trino={{ .Values.server.log.presto.level }}
 
 ---

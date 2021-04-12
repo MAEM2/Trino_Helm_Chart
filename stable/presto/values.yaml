@@ -2,8 +2,8 @@ server:
   workers: 2
   node:
     environment: production
-    dataDir: /var/trino/data
-    pluginDir: /var/trino/data/plugin
+    dataDir: /data/presto
+    pluginDir: /usr/lib/presto/plugin
   log:
     presto:
       level: INFO

@@ -2,14 +2,14 @@ server:
   workers: 2
   node:
     environment: production
-    dataDir: /var/trino/data
-    pluginDir: /etc/trino/plugin
+    dataDir: /data/presto
+    pluginDir: /usr/lib/presto/plugin
   log:
     presto:
       level: INFO
   config:
-    path: /etc/trino
-    pathCatalog: /etc/trino/catalog
+    path: /usr/lib/presto/etc
+    pathCatalog: /usr/lib/presto/etc/catalog
     http:
       port: 8080
     query:

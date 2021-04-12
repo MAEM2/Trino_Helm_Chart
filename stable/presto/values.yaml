@@ -2,7 +2,7 @@ server:
   workers: 2
   node:
     environment: production
-    dataDir: /etc/trino/data
+    dataDir: /var/trino/data
     pluginDir: /etc/trino/plugin
   log:
     presto:

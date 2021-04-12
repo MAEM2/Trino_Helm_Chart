@@ -3,7 +3,7 @@ server:
   node:
     environment: production
     dataDir: /data/trino
-    pluginDir: /etc/trino/plugin
+    pluginDir: /data/trino/plugin
   log:
     presto:
       level: INFO

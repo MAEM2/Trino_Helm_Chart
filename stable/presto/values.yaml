@@ -3,13 +3,13 @@ server:
   node:
     environment: production
     dataDir: /data/presto
-    pluginDir: /usr/lib/presto/plugin
+    pluginDir: /usr/lib/trino/plugin
   log:
     presto:
       level: INFO
   config:
-    path: /usr/lib/presto/etc
-    pathCatalog: /usr/lib/presto/etc/catalog
+    path: /usr/lib/trino/etc
+    pathCatalog: /usr/lib/trino/etc/catalog
     http:
       port: 8080
     query:

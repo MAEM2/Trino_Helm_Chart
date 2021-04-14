@@ -59,7 +59,7 @@ hive:
     ssl:
       enabled: false
     sse:
-      enabled: true
+      enabled: false
     max-connections: 100
     aws-access-key: 
     aws-secret-key: 

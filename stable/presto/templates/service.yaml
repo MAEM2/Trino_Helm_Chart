@@ -10,10 +10,10 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.server.config.http.port }}
-      targetPort: http-coord
+    - port: {{ .Values.server.config.https.port }}
+      targetPort: https-coord
       protocol: TCP
-      name: http-coord
+      name: https-coord
   selector:
     app: {{ template "presto.name" . }}
     release: {{ .Release.Name }}

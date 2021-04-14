@@ -36,14 +36,7 @@ data:
     query.max-memory={{ .Values.server.config.query.maxMemory }}
     query.max-memory-per-node={{ .Values.server.config.query.maxMemoryPerNode }}
     discovery-server.enabled=true
-    discovery.uri=https://localhost:{{ .Values.server.config.http.port }}
-    
-    http-server.http.enabled={{ .Values.server.config.http.enabled }}
-    node.internal-address-source={{ .Values.server.config.node.address }}
-    http-server.https.enabled={{ .Values.server.config.https.enabled }}
-    http-server.https.port={{ .Values.server.config.https.port }}
-    http-server.https.keystore.path={{ .Values.server.config.https.keystore.path }}
-    http-server.https.keystore.key={{ .Values.server.config.https.keystore.password }}
+    discovery.uri=http://localhost:{{ .Values.server.config.http.port }}
 
   log.properties: |
     io.trino={{ .Values.server.log.presto.level }}

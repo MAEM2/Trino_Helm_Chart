@@ -12,6 +12,7 @@ server:
     pathCatalog: /etc/trino/catalog
     http:
       port: 8080
+      enabled: false
     https:
       port: 8080
       enabled: true

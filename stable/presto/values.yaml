@@ -58,6 +58,8 @@ hive:
     endpoint: 127.0.0.1
     ssl:
       enabled: false
+    sse:
+      enabled: true
     max-connections: 100
     aws-access-key: 
     aws-secret-key: 

@@ -12,14 +12,6 @@ server:
     pathCatalog: /etc/trino/catalog
     http:
       port: 8080
-    https:
-      port: 8080
-      enabled: true
-      keystore:
-        path:
-        password:
-    node:
-      address: FQDN
     query:
       maxMemory: "4GB"
       maxMemoryPerNode: "1GB"

@@ -44,8 +44,8 @@ spec:
               name: config-volume-hive
           ports:
             - name: https-coord
-                containerPort: {{ .Values.server.config.https.port }}
-                protocol: TCP
+              containerPort: {{ .Values.server.config.https.port }}
+              protocol: TCP
           env:
             - name: JAVA_OPTS
               value: -Dcom.amazonaws.sdk.disableCertChecking=true

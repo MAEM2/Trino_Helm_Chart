@@ -72,3 +72,7 @@ hive:
     max-connections: 100
     aws-access-key: 
     aws-secret-key: 
+command:
+  keystore:
+    path: /data/trino/keystore.jks
+    password: 

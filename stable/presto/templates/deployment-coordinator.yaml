@@ -44,8 +44,8 @@ spec:
             - mountPath: {{ .Values.server.config.pathCatalog }}
               name: config-volume-hive
           ports:
-            - name: https-coord
-              containerPort: {{ .Values.server.config.https.port }}
+            - name: http-coord
+              containerPort: {{ .Values.server.config.http.port }}
               protocol: TCP
           env:
             - name: JAVA_OPTS

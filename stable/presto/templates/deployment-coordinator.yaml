@@ -37,6 +37,7 @@ spec:
         - name: {{ .Chart.Name }}-coordinator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ['/bin/sh', '-c', 'keytool -genkeypair -alias presto -keyalg RSA -keystore {{ .Values.command.keystore.path }} -dname "CN=dmsa_appln@oocl.com, OU=Unknown, O=Unknown, L=Unknown, ST=Unknown, C=Unknown" -storepass {{ .Values.command.keystore.password }}']
           volumeMounts:
             - mountPath: {{ .Values.server.config.path }}
               name: config-volume

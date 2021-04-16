@@ -39,6 +39,10 @@ data:
     http-server.https.port={{ .Values.server.config.https.port }}
     http-server.https.keystore.path={{ .Values.server.config.https.keystore.path }}
     http-server.https.keystore.key={{ .Values.server.config.https.keystore.password }}
+    
+    internal-communication.https.required=true
+    internal-communication.https.keystore.path={{ .Values.server.config.https.keystore.path }}
+    internal-communication.https.keystore.key={{ .Values.server.config.https.keystore.password }}
 
   log.properties: |
     io.trino={{ .Values.server.log.presto.level }}

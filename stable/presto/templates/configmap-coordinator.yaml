@@ -38,8 +38,19 @@ data:
     discovery-server.enabled=true
     discovery.uri=http://localhost:{{ .Values.server.config.http.port }}
     
+    http-server.https.enabled=true
+    http-server.https.port={{ .Values.server.config.https.port }}
+    http-server.https.keystore.path={{ .Values.server.config.https.keystore.path }}
+    http-server.https.keystore.key={{ .Values.server.config.https.keystore.key }}
+    http-server.authentication.type=PASSWORD
 
   log.properties: |
     io.trino={{ .Values.server.log.presto.level }}
 
+  password-authenticator.properties: |
+    password-authenticator.name=file
+    file.password-file=etc/password.db
+    
+  password.db: |
+    {{ .Values.server.passwords.username }}:{{ .Values.server.passwords.pwd }}
 ---

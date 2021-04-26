@@ -21,11 +21,6 @@ spec:
         release: {{ .Release.Name }}
         component: coordinator
     spec:
-      {{- with .Values.image.securityContext }}
-      securityContext:
-        runAsUser: {{ .runAsUser }}
-        runAsGroup: {{ .runAsGroup }}
-      {{- end }}
       volumes:
         - name: config-volume
           configMap:

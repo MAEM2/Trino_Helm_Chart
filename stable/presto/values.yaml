@@ -7,18 +7,21 @@ server:
   log:
     presto:
       level: INFO
+  passwords:
+    username: 
+    pwd: 
   config:
     path: /etc/trino
     pathCatalog: /etc/trino/catalog
     http:
       port: 8080
-      enabled: false
+      enabled: true
     https:
       port: 8443
       enabled: true
       keystore:
         path:
-        password:
+        key:
     node:
       address: FQDN
     query:

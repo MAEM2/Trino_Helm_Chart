@@ -37,6 +37,10 @@ spec:
               name: config-volume
             - mountPath: {{ .Values.server.config.pathCatalog }}
               name: config-volume-hive
+            - mountPath: {{ .Values.server.config.https.keystore.mountpath }}
+              name: keystore-volume
+            - mountPath: {{ .Values.server.config.passwordauthenticator.mountpath }}
+              name: passworddb-volume
           ports:
             - name: http-coord
               containerPort: {{ .Values.server.config.http.port }}

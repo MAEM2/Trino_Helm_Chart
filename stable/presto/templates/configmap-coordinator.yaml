@@ -49,8 +49,6 @@ data:
 
   password-authenticator.properties: |
     password-authenticator.name=file
-    file.password-file=etc/password.db
+    file.password-file={{ .Values.server.config.passwordauthenticator.filepath }}
     
-  password.db: |
-    {{ .Values.server.passwords.username }}:{{ .Values.server.passwords.pwd }}
 ---

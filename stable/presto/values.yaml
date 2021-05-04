@@ -18,12 +18,17 @@ server:
       enabled: true
     https:
       port: 8443
+      nodePort: 30469
       enabled: true
       keystore:
+        mountpath: 
         path:
         key:
     node:
       address: FQDN
+    passwordauthenticator:
+      filepath: 
+      mountpath: 
     query:
       maxMemory: "4GB"
       maxMemoryPerNode: "1GB"
@@ -48,6 +53,7 @@ containers:
 
 service:
   type: ClusterIP
+  nodePort: NodePort
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

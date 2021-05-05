@@ -28,6 +28,12 @@ spec:
         - name: config-volume-hive
           configMap:
             name: {{ template "presto.hive" . }}
+        - name: keystore-volume
+          secret:
+            name: presto-keystore
+        - name: passworddb-volume
+          secret:
+            name: presto-passworddb
       containers:
         - name: {{ .Chart.Name }}-coordinator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

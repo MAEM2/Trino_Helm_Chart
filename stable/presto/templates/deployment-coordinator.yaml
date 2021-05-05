@@ -30,10 +30,10 @@ spec:
             name: {{ template "presto.hive" . }}
         - name: keystore-volume
           secret:
-            name: presto-keystore
+            secretName: presto-keystore
         - name: passworddb-volume
           secret:
-            name: presto-passworddb
+            secretName: presto-passworddb
       containers:
         - name: {{ .Chart.Name }}-coordinator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

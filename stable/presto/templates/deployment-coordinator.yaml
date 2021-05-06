@@ -51,6 +51,9 @@ spec:
             - name: http-coord
               containerPort: {{ .Values.server.config.http.port }}
               protocol: TCP
+            - name: https-coord
+              containerPort: {{ .Values.server.config.https.port }}
+              protocol: TCP
           env:
             - name: JAVA_OPTS
               value: -Dcom.amazonaws.sdk.disableCertChecking=true

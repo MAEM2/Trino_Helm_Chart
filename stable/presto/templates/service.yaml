@@ -36,7 +36,7 @@ spec:
       targetPort: https-coord
       protocol: TCP
       name: https-coord
-      nodePort: {{ .Values.server.config.https.nodePort }}
+#       nodePort: {{ .Values.server.config.https.nodePort }}
   selector:
     app: {{ template "presto.name" . }}
     release: {{ .Release.Name }}

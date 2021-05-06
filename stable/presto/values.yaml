@@ -18,7 +18,7 @@ server:
       enabled: true
     https:
       port: 8443
-      nodePort: 30469
+#       nodePort: 30469
       enabled: true
       keystore:
         mountpath: 

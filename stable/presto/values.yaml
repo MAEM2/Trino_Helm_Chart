@@ -7,9 +7,6 @@ server:
   log:
     presto:
       level: INFO
-  passwords:
-    username: 
-    pwd: 
   config:
     path: /etc/trino
     pathCatalog: /etc/trino/catalog
@@ -18,7 +15,6 @@ server:
       enabled: true
     https:
       port: 8443
-#       nodePort: 30469
       enabled: true
       keystore:
         mountpath: 
@@ -46,10 +42,6 @@ image:
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000
-    
-containers:
-  args:
-    command: 
 
 service:
   type: ClusterIP
@@ -85,7 +77,6 @@ hive:
     max-connections: 100
     aws-access-key: 
     aws-secret-key: 
-command:
-  keystore:
-    path: /data/trino/keystore.jks
-    password: 
+storagegrid:
+  access:
+    key: 

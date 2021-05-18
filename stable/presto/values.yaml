@@ -13,6 +13,13 @@ server:
       port: 8080
     https:
       port: 8443
+      keystore:
+        mountpath: 
+        path:
+        key:
+    passwordauthenticator:
+      filepath: 
+      mountpath:  
     query:
       maxMemory: "4GB"
       maxMemoryPerNode: "1GB"
@@ -33,6 +40,7 @@ image:
 
 service:
   type: ClusterIP
+  nodePort: NodePort
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -51,3 +59,18 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+hive:
+  metastore:
+    uri: thrift://metastore:9083
+  s3:
+    endpoint: 127.0.0.1
+    ssl:
+      enabled: false
+    max-connections: 100
+    aws-access-key: 
+    aws-secret-key: 
+    
+storagegrid: 
+  access:
+    key: 

@@ -2,33 +2,17 @@ server:
   workers: 1
   node:
     environment: production
-    dataDir: /data/trino
-    pluginDir: /data/trino/plugin
+    dataDir: /data/presto
+    pluginDir: /usr/lib/presto/plugin
   log:
     presto:
       level: INFO
-  passwords:
-    username: 
-    pwd: 
   config:
-    path: /etc/trino
-    pathCatalog: /etc/trino/catalog
+    path: /usr/lib/presto/etc
     http:
       port: 8080
-      enabled: true
     https:
       port: 8443
-#       nodePort: 30469
-      enabled: true
-      keystore:
-        mountpath: 
-        path:
-        key:
-    node:
-      address: FQDN
-    passwordauthenticator:
-      filepath: 
-      mountpath: 
     query:
       maxMemory: "4GB"
       maxMemoryPerNode: "1GB"
@@ -40,20 +24,15 @@ server:
         heapRegionSize: "32M"
 
 image:
-  repository: trinodb/trino
-  tag: 354
+  repository: prestosql/presto
+  tag: 329
   pullPolicy: IfNotPresent
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000
-    
-containers:
-  args:
-    command: 
 
 service:
   type: ClusterIP
-  nodePort: NodePort
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -72,20 +51,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-
-hive:
-  metastore:
-    uri: thrift://metastore:9083
-  s3:
-    endpoint: 127.0.0.1
-    ssl:
-      enabled: false
-    sse:
-      enabled: false
-    max-connections: 100
-    aws-access-key: 
-    aws-secret-key: 
-command:
-  keystore:
-    path: /data/trino/keystore.jks
-    password: 

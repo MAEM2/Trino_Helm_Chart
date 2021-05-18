@@ -9,6 +9,7 @@ server:
       level: INFO
   config:
     path: /usr/lib/presto/etc
+    pathCatalog: /usr/lib/presto/etc/catalog
     http:
       port: 8080
     https:

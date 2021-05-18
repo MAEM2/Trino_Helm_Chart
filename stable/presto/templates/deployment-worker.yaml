@@ -49,12 +49,12 @@ spec:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
-                  name: dmsa-poc-storagegrid-access-key
+                  name: {{ .Values.storagerid.access.key }}
                   key: s3-access-key
             - name: AWS_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
-                  name: dmsa-poc-storagegrid-access-key
+                  name: {{ .Values.storagerid.access.key }}
                   key: s3-secret-key
 #           livenessProbe:
 #             exec:

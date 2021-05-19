@@ -18,5 +18,4 @@ data:
     hive.s3.max-connections={{ index .Values "hive" "s3" "max-connections" }}
     hive.s3.aws-access-key={{ index .Values "hive" "s3" "aws-access-key" }}
     hive.s3.aws-secret-key={{ index .Values "hive" "s3" "aws-secret-key" }}
-    hive.s3.sse.enabled={{ .Values.hive.s3.sse.enabled }}
 ---

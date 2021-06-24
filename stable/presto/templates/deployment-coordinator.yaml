@@ -56,21 +56,21 @@ spec:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
-                  name: dmsa-poc-storagegrid-access-key
+                  name: {{ .Vaules.hive.storagegrid.access.key }}
                   key: s3-access-key
             - name: AWS_SECRET_ACCESS_KEY
               valueFrom:
                 secretKeyRef:
-                  name: dmsa-poc-storagegrid-access-key
+                  name: {{ .Vaules.hive.storagegrid.access.key }}
                   key: s3-secret-key
-#           livenessProbe:
-#             httpGet:
-#               path: /v1/cluster
-#               port: http-coord
-#           readinessProbe:
-#             httpGet:
-#               path: /v1/cluster
-#               port: http-coord
+          livenessProbe:
+            httpGet:
+              path: /v1/cluster
+              port: http-coord
+          readinessProbe:
+            httpGet:
+              path: /v1/cluster
+              port: http-coord
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

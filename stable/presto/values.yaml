@@ -56,10 +56,6 @@ hive:
     uri: thrift://metastore:9083
   s3:
     endpoint: 127.0.0.1
-    ssl:
-      enabled: false
-    sse:
-      enabled: false
     max-connections: 100
     aws-access-key: 
     aws-secret-key: 

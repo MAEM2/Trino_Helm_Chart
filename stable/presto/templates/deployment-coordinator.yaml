@@ -56,7 +56,7 @@ spec:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
-                  name: dmsa-poc-storagegrid-access-key-nprd
+                  name: {{ .Vaules.hive.s3.storagegrid }}
                   key: s3-access-key
             - name: AWS_SECRET_ACCESS_KEY
               valueFrom:

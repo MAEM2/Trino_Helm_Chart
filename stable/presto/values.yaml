@@ -2,14 +2,14 @@ server:
   workers: 2
   node:
     environment: production
-    dataDir: /data/trino
-    pluginDir: /data/trino/plugin
+    dataDir: /data/presto
+    pluginDir: /usr/lib/presto/plugin
   log:
     presto:
       level: INFO
   config:
-    path: /etc/trino
-    pathCatalog: /etc/trino/catalog
+    path: /usr/lib/presto/etc
+    pathCatalog: /usr/lib/presto/etc/catalog
     http:
       port: 8080
     query:
@@ -23,8 +23,8 @@ server:
         heapRegionSize: "32M"
 
 image:
-  repository: trinodb/trino
-  tag: 354
+  repository: prestosql/presto
+  tag: 329
   pullPolicy: IfNotPresent
   securityContext:
     runAsUser: 1000

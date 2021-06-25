@@ -19,25 +19,3 @@ spec:
     release: {{ .Release.Name }}
     component: coordinator
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ template "presto.fullname" . }}-external
-  labels:
-    app: {{ template "presto.name" . }}
-    chart: {{ template "presto.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-spec:
-  type: {{ .Values.service.nodePort }}
-  ports:
-    - port: {{ .Values.server.config.https.port }}
-      targetPort: https-coord
-      protocol: TCP
-      name: https-coord
-#       nodePort: {{ .Values.server.config.https.nodePort }}
-  selector:
-    app: {{ template "presto.name" . }}
-    release: {{ .Release.Name }}
-    component: coordinator

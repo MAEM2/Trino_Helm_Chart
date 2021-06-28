@@ -34,9 +34,9 @@ spec:
         - name: passworddb-volume
           secret:
             secretName: presto-passworddb
-        - name: ldap-volume
-          secret:
-            secretName: ldap-certificate
+#         - name: ldap-volume
+#           secret:
+#             secretName: ldap-certificate
       containers:
         - name: {{ .Chart.Name }}-coordinator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -50,8 +50,8 @@ spec:
               name: keystore-volume
             - mountPath: {{ .Values.server.config.passwordauthenticator.mountpath }}
               name: passworddb-volume
-            - mountPath: {{ .Values.server.config.ldap.certificate.mountpath }}
-              name: ldap-volume
+#             - mountPath: {{ .Values.server.config.ldap.certificate.mountpath }}
+#               name: ldap-volume
           ports:
             - name: http-coord
               containerPort: {{ .Values.server.config.http.port }}

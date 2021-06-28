@@ -26,6 +26,8 @@ server:
       filepath: 
       mountpath:
     ldap:
+      url: ldap://server:port
+      user: 
       certificate:
         mountpath:
     query:

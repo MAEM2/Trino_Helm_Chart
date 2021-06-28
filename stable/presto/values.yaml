@@ -28,8 +28,6 @@ server:
     ldap:
       url: ldap://server:port
       user: 
-      certificate:
-        mountpath:
     query:
       maxMemory: "4GB"
       maxMemoryPerNode: "1GB"

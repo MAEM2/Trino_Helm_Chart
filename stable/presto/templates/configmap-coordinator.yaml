@@ -49,8 +49,8 @@ data:
 
   password-authenticator.properties: |
     password-authenticator.name=ldap
+    ldap.allow-insecure=true
     ldap.url={{ .Values.server.config.ldap.url }}
-    ldap.ssl-trust-certificate={{ .Values.server.config.ldap.certificate }}
     ldap.user-bind-pattern={{ .Values.server.config.ldap.user }}
     
 ---

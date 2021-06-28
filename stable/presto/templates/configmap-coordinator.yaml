@@ -48,7 +48,9 @@ data:
     io.trino={{ .Values.server.log.presto.level }}
 
   password-authenticator.properties: |
-    password-authenticator.name=file
-    file.password-file={{ .Values.server.config.passwordauthenticator.filepath }}
+    password-authenticator.name=ldap
+    ldap.url={{ .Values.server.config.ldaps.url }}
+    ldap.ssl-trust-certificate={{ .Values.server.config.ldaps.certificate }}
+    ldap.user-bind-pattern={{ .Values.server.config.ldaps.user }}
     
 ---

@@ -25,9 +25,6 @@ server:
     passwordauthenticator:
       filepath: 
       mountpath:
-    ldap:
-      certificate:
-        mountpath:
     query:
       maxMemory: "4GB"
       maxMemoryPerNode: "1GB"

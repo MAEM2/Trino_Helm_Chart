@@ -25,6 +25,8 @@ server:
     passwordauthenticator:
       filepath: 
       mountpath:
+    hdfs: 
+      mountpath: 
     ldap:
       url: ldap://server:port
       user: 

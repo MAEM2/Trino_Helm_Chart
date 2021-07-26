@@ -27,6 +27,8 @@ server:
       mountpath:
     hdfs: 
       mountpath: 
+      krb: 
+        mountpath: 
     ldap:
       url: ldap://server:port
       user: 

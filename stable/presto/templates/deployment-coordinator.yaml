@@ -37,6 +37,9 @@ spec:
         - name: hdfs-volume
           secret:
             secretName: hdfs-keytab
+        - name: hdfs-krb-volume
+          secret:
+            secretName: hdfs-krb
       containers:
         - name: {{ .Chart.Name }}-coordinator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -52,6 +55,8 @@ spec:
               name: passworddb-volume
             - mountPath: {{ .Values.server.config.hdfs.mountpath }}
               name: hdfs-volume
+            - mountPath: {{ .Values.server.config.hdfs.krb.mountpath }}
+              name: hdfs-krb-volume
           ports:
             - name: http-coord
               containerPort: {{ .Values.server.config.http.port }}

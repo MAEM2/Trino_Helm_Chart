@@ -51,4 +51,7 @@ data:
     password-authenticator.name=file
     file.password-file={{ .Values.server.config.passwordauthenticator.filepath }}
     
+     
+  
+    
 ---

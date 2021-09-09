@@ -21,6 +21,7 @@ spec:
         app: {{ template "presto.name" . }}
         release: {{ .Release.Name }}
         component: coordinator
+        microservice: trino-coordinator
     spec:
       volumes:
         - name: config-volume

@@ -9,6 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     component: worker
+    microservice: trino-worker
 spec:
   replicas: {{ .Values.server.workers }}
   selector:
@@ -22,6 +23,7 @@ spec:
         app: {{ template "presto.name" . }}
         release: {{ .Release.Name }}
         component: worker
+        microservice: trino-worker
     spec:
       volumes:
         - name: config-volume

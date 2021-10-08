@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "presto.coordinator" . }}
+  name: {{ template "trino.coordinator" . }}
   labels:
-    app: {{ template "presto.name" . }}
-    chart: {{ template "presto.chart" . }}
+    app: {{ template "trino.name" . }}
+    chart: {{ template "trino.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     component: coordinator
@@ -12,13 +12,13 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ template "presto.name" . }}
+      app: {{ template "trino.name" . }}
       release: {{ .Release.Name }}
       component: coordinator
   template:
     metadata:
       labels:
-        app: {{ template "presto.name" . }}
+        app: {{ template "trino.name" . }}
         release: {{ .Release.Name }}
         component: coordinator
         microservice: trino-coordinator
@@ -26,16 +26,16 @@ spec:
       volumes:
         - name: config-volume
           configMap:
-            name: {{ template "presto.coordinator" . }}
+            name: {{ template "trino.coordinator" . }}
         - name: config-volume-hive
           configMap:
-            name: {{ template "presto.hive" . }}
+            name: {{ template "trino.hive" . }}
         - name: keystore-volume
           secret:
-            secretName: presto-keystore
+            secretName: trino-keystore
         - name: passworddb-volume
           secret:
-            secretName: presto-passworddb
+            secretName: trino-passworddb
       containers:
         - name: {{ .Chart.Name }}-coordinator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

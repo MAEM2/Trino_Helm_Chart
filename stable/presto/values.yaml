@@ -1,3 +1,4 @@
+nameOverride: presto
 server:
   workers: 1
   node:

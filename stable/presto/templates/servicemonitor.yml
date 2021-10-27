@@ -1,0 +1,26 @@
+{{ if .Values.exporters.jmx.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "presto.fullname" . }}
+  labels:
+    app: {{ template "presto.name" . }}
+    chart: {{ template "presto.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app: {{ template "presto.name" . }}
+      monitoring.service: jmx
+      release: {{ .Release.Name }}
+      chart: {{ template "presto.chart" . }}
+  endpoints:
+    - port: exporter
+      path: /metrics
+      interval: 10s
+  {{ end }}
+---

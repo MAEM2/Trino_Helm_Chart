@@ -24,6 +24,17 @@ data:
     -XX:+HeapDumpOnOutOfMemoryError
     -XX:+ExitOnOutOfMemoryError
     -Djdk.attach.allowAttachSelf=true
+    {{ if .Values.exporters.jmx.enabled }}
+    -Dcom.sun.management.jmxremote
+    -Dcom.sun.management.jmxremote.local.only=false
+    -Dcom.sun.management.jmxremote.authenticate=false
+    -Dcom.sun.management.jmxremote.ssl=false
+    -Dcom.sun.management.jmxremote.port={{ .Values.server.jmx.registryPort }}
+    -Dcom.sun.management.jmxremote.rmi.port={{ .Values.server.jmx.serverPort }}
+    {{ end }}
+    {{ range $value := .Values.server.jvm.additional_params }}
+    {{ $value }}
+    {{end}}
 
   config.properties: |
     coordinator=true
@@ -37,8 +48,15 @@ data:
     query.max-memory-per-node={{ .Values.server.config.query.maxMemoryPerNode }}
     discovery-server.enabled=true
     discovery.uri=http://localhost:{{ .Values.server.config.http.port }}
+    {{ if .Values.exporters.jmx.enabled }}
+    jmx.rmiregistry.port={{ .Values.server.jmx.registryPort }}
+    jmx.rmiserver.port={{ .Values.server.jmx.serverPort }}
+    {{ end }}
+    {{ range $key,$value := .Values.server.config.additional_params }}
+    {{ $key }}={{ $value }}
+  {{end}}
 
   log.properties: |
-    io.trino={{ .Values.server.log.presto.level }}
+    io.trinosql={{ .Values.server.log.presto.level }}
 
 ---

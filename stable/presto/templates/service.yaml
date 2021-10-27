@@ -18,3 +18,30 @@ spec:
     app: {{ template "presto.name" . }}
     release: {{ .Release.Name }}
     component: coordinator
+---
+  {{ if .Values.exporters.jmx.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "presto.fullname" . }}-jmx
+  labels:
+    app: {{ template "presto.name" . }}
+    monitoring.service: jmx
+    release: {{ .Release.Name }}
+    chart: {{ template "presto.chart" . }}
+    heritage: {{ .Release.Service }}
+  {{- if .Values.service.labels }}
+  {{- toYaml .Values.service.labels | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.exporters.jmx.port }}
+      targetPort: prom-exporter
+      protocol: TCP
+      name: exporter
+  selector:
+    app: {{ template "presto.name" . }}
+    release: {{ .Release.Name }}
+  {{end}}
+---

@@ -30,6 +30,11 @@ spec:
         - name: config-volume-hive
           configMap:
             name: {{ template "presto.hive" . }}
+        {{ if .Values.exporters.jmx.enabled }}
+        - name: config-jmx-exporter
+          configMap:
+            name: {{ template "presto.jmx-exporter" . }}
+        {{ end }}
       containers:
         - name: {{ .Chart.Name }}-worker
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -72,6 +77,49 @@ spec:
             periodSeconds: 10
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+
+{{ if .Values.exporters.jmx.enabled }}
+        - name: jmx-exporter
+          image: "{{ .Values.exporters.jmx.image.repository }}:{{ .Values.exporters.jmx.image.tag }}"
+          imagePullPolicy: {{ .Values.exporters.jmx.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.exporters.jmx.port }}
+              protocol: TCP
+              name: prom-exporter
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: prom-exporter
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 60
+            failureThreshold: 8
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: prom-exporter
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 60
+            failureThreshold: 8
+            successThreshold: 1
+          env:
+            - name: SERVICE_PORT
+              value: {{ .Values.exporters.jmx.port | quote }}
+            {{- with .Values.exporters.jmx.env }}
+            {{- range $key, $value := . }}
+            - name: {{ $key | upper | replace "." "_" }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          resources:
+          {{ toYaml .Values.exporters.jmx.resources | indent 12 }}
+          volumeMounts:
+            - name: config-jmx-exporter
+              mountPath: /opt/jmx_exporter/config.yml
+              subPath: config.yml
+      {{- end }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

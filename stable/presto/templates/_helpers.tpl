@@ -42,3 +42,7 @@ Create chart name and version as used by the chart label.
 {{- define "presto.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{- define "presto.jmx-exporter" -}}
+{{ template "presto.fullname" . }}-jmx-exporter
+{{- end -}}

@@ -21,6 +21,12 @@ server:
       type: "UseG1GC"
       g1:
         heapRegionSize: "32M"
+  jmx:
+    registryPort: 9080
+    serverPort: 9081
+  gracefulShutdown:
+    enabled: true
+    gracePeriodSeconds: 10
 
 image:
   repository: prestosql/presto
@@ -62,13 +68,6 @@ hive:
     storagegrid: 
     aws-access-key: 
     aws-secret-key: 
-
-jmx:
-  registryPort: 9080
-  serverPort: 9081
-gracefulShutdown:
-  enabled: true
-  gracePeriodSeconds: 10
 
 exporters:
   jmx:

@@ -40,7 +40,7 @@ data:
 
 
   log.properties: |
-    io.trino={{ .Values.server.log.presto.level }}
+    io.trino={{ .Values.server.log.trino.level }}
 
 
 ---

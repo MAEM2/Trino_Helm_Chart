@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "presto.fullname" . }}
+  name: {{ template "trino.fullname" . }}
   labels:
-    app: {{ template "presto.name" . }}
-    chart: {{ template "presto.chart" . }}
+    app: {{ template "trino.name" . }}
+    chart: {{ template "trino.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -15,7 +15,28 @@ spec:
       protocol: TCP
       name: http-coord
   selector:
-    app: {{ template "presto.name" . }}
+    app: {{ template "trino.name" . }}
     release: {{ .Release.Name }}
     component: coordinator
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "trino.fullname" . }}-external
+  labels:
+    app: {{ template "trino.name" . }}
+    chart: {{ template "trino.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.nodePort }}
+  ports:
+    - port: {{ .Values.server.config.https.port }}
+      targetPort: http-coord
+      protocol: TCP
+      name: http-coord
+  selector:
+    app: {{ template "trino.name" . }}
+    release: {{ .Release.Name }}
+    component: coordinator

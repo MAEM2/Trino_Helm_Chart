@@ -58,14 +58,14 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.storagegrid.access.key }}
                   key: s3-secret-key
-          livenessProbe:
-            httpGet:
-              path: /v1/cluster
-              port: http-coord
-          readinessProbe:
-            httpGet:
-              path: /v1/cluster
-              port: http-coord
+#           livenessProbe:
+#             httpGet:
+#               path: /v1/cluster
+#               port: http-coord
+#           readinessProbe:
+#             httpGet:
+#               path: /v1/cluster
+#               port: http-coord
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

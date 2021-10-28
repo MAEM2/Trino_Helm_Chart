@@ -1,33 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "presto.coordinator" . }}
+  name: {{ template "trino.coordinator" . }}
   labels:
-    app: {{ template "presto.name" . }}
-    chart: {{ template "presto.chart" . }}
+    app: {{ template "trino.name" . }}
+    chart: {{ template "trino.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     component: coordinator
 spec:
   selector:
     matchLabels:
-      app: {{ template "presto.name" . }}
+      app: {{ template "trino.name" . }}
       release: {{ .Release.Name }}
       component: coordinator
   template:
     metadata:
       labels:
-        app: {{ template "presto.name" . }}
+        app: {{ template "trino.name" . }}
         release: {{ .Release.Name }}
         component: coordinator
     spec:
       volumes:
         - name: config-volume
           configMap:
-            name: {{ template "presto.coordinator" . }}
+            name: {{ template "trino.coordinator" . }}
         - name: config-volume-hive
           configMap:
-            name: {{ template "presto.hive" . }}
+            name: {{ template "trino.hive" . }}
       containers:
         - name: {{ .Chart.Name }}-coordinator
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -58,14 +58,14 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.storagegrid.access.key }}
                   key: s3-secret-key
-#           livenessProbe:
-#             httpGet:
-#               path: /v1/cluster
-#               port: http-coord
-#           readinessProbe:
-#             httpGet:
-#               path: /v1/cluster
-#               port: http-coord
+          livenessProbe:
+            httpGet:
+              path: /v1/cluster
+              port: http-coord
+          readinessProbe:
+            httpGet:
+              path: /v1/cluster
+              port: http-coord
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.nodeSelector }}

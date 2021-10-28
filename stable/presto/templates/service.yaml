@@ -32,7 +32,7 @@ metadata:
 spec:
   type: {{ .Values.service.nodePort }}
   ports:
-    - port: {{ .Values.server.config.https.port }}
+    - port: {{ .Values.server.config.http.port }}
       targetPort: http-coord
       protocol: TCP
       name: http-coord

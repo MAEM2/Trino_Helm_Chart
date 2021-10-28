@@ -5,7 +5,7 @@ server:
     dataDir: /data/trino
     pluginDir: /data/trino/plugin
   log:
-    presto:
+    trino:
       level: INFO
   config:
     path: /etc/trino

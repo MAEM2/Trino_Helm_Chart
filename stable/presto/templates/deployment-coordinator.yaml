@@ -68,11 +68,11 @@ spec:
                   key: s3-secret-key
           livenessProbe:
             httpGet:
-              path: /v1/cluster
+              path: /v1/info
               port: http-coord
           readinessProbe:
             httpGet:
-              path: /v1/cluster
+              path: /v1/info
               port: http-coord
           resources:
 {{ toYaml .Values.resources | indent 12 }}

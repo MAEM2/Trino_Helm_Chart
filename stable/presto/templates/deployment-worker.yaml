@@ -63,7 +63,7 @@ spec:
                   key: s3-secret-key
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.server.config.http.port }}
               protocol: TCP
           livenessProbe:
             httpGet:

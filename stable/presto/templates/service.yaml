@@ -37,7 +37,7 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.exporters.jmx.port }}
-      targetPort: prom-exporter
+      targetPort: exporter
       protocol: TCP
       name: exporter
   selector:

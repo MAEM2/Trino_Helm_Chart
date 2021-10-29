@@ -46,7 +46,7 @@ spec:
             - mountPath: {{ .Values.server.config.pathCatalog }}
               name: config-volume-hive
           ports:
-            - name: http-coord
+            - name: http
               containerPort: {{ .Values.server.config.http.port }}
               protocol: TCP
           env:
@@ -69,11 +69,11 @@ spec:
           livenessProbe:
             httpGet:
               path: /v1/info
-              port: http-coord
+              port: http
           readinessProbe:
             httpGet:
               path: /v1/info
-              port: http-coord
+              port: http
           resources:
 {{ toYaml .Values.resources | indent 12 }}
 

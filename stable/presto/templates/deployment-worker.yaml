@@ -92,11 +92,11 @@ spec:
           ports:
             - containerPort: {{ .Values.exporters.jmx.port }}
               protocol: TCP
-              name: prom-exporter
+              name: exporter
           livenessProbe:
             httpGet:
               path: /metrics
-              port: prom-exporter
+              port: exporter
             initialDelaySeconds: 30
             periodSeconds: 15
             timeoutSeconds: 60
@@ -105,7 +105,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /metrics
-              port: prom-exporter
+              port: exporter
             initialDelaySeconds: 30
             periodSeconds: 15
             timeoutSeconds: 60

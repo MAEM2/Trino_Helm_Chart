@@ -2,14 +2,14 @@ server:
   workers: 2
   node:
     environment: production
-    dataDir: /data/presto
-    pluginDir: /usr/lib/presto/plugin
+    dataDir: /data/trino
+    pluginDir: /data/trino/plugin
   log:
     presto:
       level: INFO
   config:
-    path: /usr/lib/presto/etc
-    pathCatalog: /usr/lib/presto/etc/catalog
+    path: /etc/trino
+    pathCatalog: /etc/trino/catalog
     http:
       port: 8080
     query:
@@ -29,8 +29,8 @@ server:
     gracePeriodSeconds: 10
 
 image:
-  repository: prestosql/presto
-  tag: 329
+  repository: trinodb/trino
+  tag: 356
   pullPolicy: IfNotPresent
   securityContext:
     runAsUser: 1000
@@ -38,6 +38,7 @@ image:
 
 service:
   type: ClusterIP
+  nodePort: NodePort
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -79,7 +80,7 @@ exporters:
 
     port: 9999
     config:
-      jmxUrl: service:jmx:rmi:///jndi/rmi://localhost:9080/jmxrmi
+      # jmxUrl: service:jmx:rmi:///jndi/rmi://localhost:9080/jmxrmi
       lowercaseOutputName: true
       lowercaseOutputLabelNames: true
 

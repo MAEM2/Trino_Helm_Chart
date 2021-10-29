@@ -61,20 +61,27 @@ spec:
                 secretKeyRef:
                   name: dmsa-poc-storagegrid-access-key-nprd
                   key: s3-secret-key
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
           livenessProbe:
-            exec:
-              command:
-                - /bin/bash
-                - {{ .Values.server.config.path }}/health_check.sh
-            initialDelaySeconds: 10
-            periodSeconds: 25
+            httpGet:
+              path: /v1/info
+              port: http
           readinessProbe:
-            exec:
-              command:
-                - /bin/bash
-                - {{ .Values.server.config.path }}/health_check.sh
-            initialDelaySeconds: 5
-            periodSeconds: 10
+            httpGet:
+              path: /v1/info
+              port: http
+          {{ if .Values.server.gracefulShutdown.enabled }}
+          lifecycle:
+            preStop:
+              exec:
+                command: [
+                    "sh", "-c",
+                    "curl -v  -H \"X-Trino-User: admin\" -X PUT -d '\"SHUTTING_DOWN\"' -H \"Content-type: application/json\" http://localhost:8080/v1/info/state && sleep {{ .Values.server.gracefulShutdown.gracePeriodSeconds }}"
+                ]
+          {{end }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
 

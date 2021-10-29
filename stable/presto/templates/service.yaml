@@ -11,9 +11,9 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.server.config.http.port }}
-      targetPort: http-coord
+      targetPort: http
       protocol: TCP
-      name: http-coord
+      name: http
   selector:
     app: {{ template "presto.name" . }}
     release: {{ .Release.Name }}

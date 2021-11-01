@@ -33,9 +33,11 @@ spec:
         - name: config-volume-hive
           configMap:
             name: {{ template "trino.hive" . }}
+        {{ if .Values.exporters.jmx.enabled }}
         - name: config-jmx-exporter
           configMap:
             name: {{ template "trino.jmx-exporter" . }}
+        {{end}}
         {{ if .Values.server.config.https.enabled }} 
         - name: keystore-volume
           secret:

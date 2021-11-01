@@ -1,16 +1,15 @@
-https:
-  keystore:
-    secret: trino-keystore
-    mountpath: /usr/lib/trino/etc/keystore
-    filepath: /usr/lib/trino/etc/keystore/keystore.jks
-    key: key
-  passwordfile:
-    secret: trino-passworddb
-    mountpath: /usr/lib/trino/etc
-    filepath: /usr/lib/trino/etc/password.db
+keystore:
+  secret: trino-keystore
+  mountpath: /usr/lib/trino/etc/keystore
+  filepath: /usr/lib/trino/etc/keystore/keystore.jks
+  key: key
+passwordfile:
+  secret: trino-passworddb
+  mountpath: /usr/lib/trino/etc
+  filepath: /usr/lib/trino/etc/password.db
 
 storagegrid:
-  secret: 
+  secret:
   accessKey:
   secretKey:
 
@@ -29,8 +28,8 @@ server:
     http:
       port: 8080
     https:
-      port: 8443
       enabled: true
+      port: 8443
     query:
       maxMemory: "4GB"
       maxTotalMemory: "6GB"
@@ -689,4 +688,3 @@ exporters:
       interval: 30s
       scrapeTimeout: 30s
       scheme: http
-   

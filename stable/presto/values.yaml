@@ -1,3 +1,19 @@
+https:
+  keystore:
+    secret: trino-keystore
+    mountpath: /usr/lib/trino/etc/keystore
+    filepath: /usr/lib/trino/etc/keystore/keystore.jks
+    key: key
+  passwordfile:
+    secret: trino-passworddb
+    mountpath: /usr/lib/trino/etc
+    filepath: /usr/lib/trino/etc/password.db
+
+storagegrid:
+  secret: 
+  accessKey:
+  secretKey:
+
 server:
   workers: 2
   node:
@@ -5,16 +21,21 @@ server:
     dataDir: /data/trino
     pluginDir: /data/trino/plugin
   log:
-    presto:
+    trino:
       level: INFO
   config:
     path: /etc/trino
     pathCatalog: /etc/trino/catalog
     http:
       port: 8080
+    https:
+      port: 8443
+      enabled: true
     query:
       maxMemory: "4GB"
-      maxMemoryPerNode: "1GB"
+      maxTotalMemory: "6GB"
+      maxMemoryPerNode: "2GB"
+      maxTotalMemoryPerNode: "4GB"
   jvm:
     maxHeapSize: "8G"
     gcMethod:
@@ -38,7 +59,7 @@ image:
 
 service:
   type: ClusterIP
-  nodePort: NodePort
+  externalType: NodePort
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -66,9 +87,9 @@ hive:
       enabled: true
     endpoint: 127.0.0.1
     max-connections: 100
-    storagegrid: 
-    aws-access-key: 
-    aws-secret-key: 
+#     storagegrid: 
+#     aws-access-key: 
+#     aws-secret-key: 
 
 exporters:
   jmx:

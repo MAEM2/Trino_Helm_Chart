@@ -45,15 +45,17 @@ data:
 {{- end }}
     http-server.http.port={{ .Values.server.config.http.port }}
     query.max-memory={{ .Values.server.config.query.maxMemory }}
+    query.max-total-memory={{ .Values.server.config.query.maxTotalMemory }}
     query.max-memory-per-node={{ .Values.server.config.query.maxMemoryPerNode }}
+    query.max-total-memory-per-node={{ .Values.server.config.query.maxTotalMemoryPerNode }}
     discovery-server.enabled=true
     discovery.uri=http://localhost:{{ .Values.server.config.http.port }}
     
     {{ if .Values.server.config.https.enabled }}
     http-server.https.enabled={{ .Values.server.config.https.enabled }}
     http-server.https.port={{ .Values.server.config.https.port }}
-    http-server.https.keystore.path={{ .Values.server.config.https.keystore.path }}
-    http-server.https.keystore.key={{ .Values.server.config.https.keystore.key }}
+    http-server.https.keystore.path={{ .Values.https.keystore.filepath }}
+    http-server.https.keystore.key={{ .Values.storagegrid.secret }}
     http-server.authentication.type=PASSWORD
     {{end}}
     
@@ -66,10 +68,10 @@ data:
   {{end}}
 
   log.properties: |
-    io.trinosql={{ .Values.server.log.presto.level }}
+    io.trinosql={{ .Values.server.log.trino.level }}
 {{ if .Values.server.config.https.enabled }}
   password-authenticator.properties: |
     password-authenticator.name=file
-    file.password-file={{ .Values.server.config.passwordauthenticator.filepath }}
+    file.password-file={{ .Values.https.passwordfile.filepath }}
 {{end}}
 ---

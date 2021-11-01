@@ -80,7 +80,7 @@ exporters:
 
     port: 9999
     config:
-      # jmxUrl: service:jmx:rmi:///jndi/rmi://localhost:9080/jmxrmi
+      jmxUrl: service:jmx:rmi:///jndi/rmi://127.0.0.1:9080/jmxrmi
       lowercaseOutputName: true
       lowercaseOutputLabelNames: true
 

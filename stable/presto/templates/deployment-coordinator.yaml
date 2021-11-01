@@ -39,10 +39,10 @@ spec:
         {{ if .Values.server.config.https.enabled }} 
         - name: keystore-volume
           secret:
-            secretName: {{ .Values.https.keystore.secret }}
+            secretName: {{ .Values.keystore.secret }}
         - name: passworddb-volume
           secret:
-            secretName: {{ .Values.https.passwordfile.secret }}
+            secretName: {{ .Values.passwordfile.secret }}
         {{end}}
       containers:
         - name: {{ .Chart.Name }}-coordinator
@@ -54,9 +54,9 @@ spec:
             - mountPath: {{ .Values.server.config.pathCatalog }}
               name: config-volume-hive
             {{ if .Values.server.config.https.enabled }}  
-            - mountPath: {{ .Values.https.keystore.mountpath }}
+            - mountPath: {{ .Values.keystore.mountpath }}
               name: keystore-volume
-            - mountPath: {{ .Values.https.passwordfile.mountpath }}
+            - mountPath: {{ .Values.passwordfile.mountpath }}
               name: passworddb-volume
             {{end}}  
           ports:

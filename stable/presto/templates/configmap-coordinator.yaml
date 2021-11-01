@@ -54,8 +54,8 @@ data:
     {{ if .Values.server.config.https.enabled }}
     http-server.https.enabled={{ .Values.server.config.https.enabled }}
     http-server.https.port={{ .Values.server.config.https.port }}
-    http-server.https.keystore.path={{ .Values.https.keystore.filepath }}
-    http-server.https.keystore.key={{ .Values.storagegrid.secret }}
+    http-server.https.keystore.path={{ .Values.keystore.filepath }}
+    http-server.https.keystore.key={{ .Values.keystore.key }}
     http-server.authentication.type=PASSWORD
     {{end}}
     
@@ -72,6 +72,6 @@ data:
 {{ if .Values.server.config.https.enabled }}
   password-authenticator.properties: |
     password-authenticator.name=file
-    file.password-file={{ .Values.https.passwordfile.filepath }}
+    file.password-file={{ .Values.passwordfile.filepath }}
 {{end}}
 ---

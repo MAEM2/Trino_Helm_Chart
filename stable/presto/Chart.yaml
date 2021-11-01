@@ -1,9 +1,10 @@
 apiVersion: v1
-appVersion: 354
+appVersion: 356
 description: Distributed SQL query engine for running interactive analytic queries
-name: presto
+name: trino
 version: 1.0.0
 home: https://trino.io/
-icon: https://prestosql.io/docs/current/_static/presto.png
 sources:
+  - https://github.com/trinodb/charts
+  - https://github.com/trinodb/trino/tree/master/core/docker
   - https://github.com/trinodb/trino

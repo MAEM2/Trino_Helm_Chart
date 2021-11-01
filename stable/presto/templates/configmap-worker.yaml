@@ -26,7 +26,7 @@ data:
     -XX:+ExitOnOutOfMemoryError
     -Djdk.attach.allowAttachSelf=true
     {{ if .Values.exporters.jmx.enabled }}
-    -Dcom.sun.management.jmxremote
+    -Dcom.sun.management.jmxremote=true
     -Dcom.sun.management.jmxremote.local.only=false
     -Dcom.sun.management.jmxremote.authenticate=false
     -Dcom.sun.management.jmxremote.ssl=false

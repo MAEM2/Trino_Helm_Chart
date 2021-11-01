@@ -31,10 +31,10 @@ metadata:
 spec:
   type: {{ .Values.service.externalType }}
   ports:
-    - port: {{ .Values.server.config.http.port }}
-      targetPort: http
+    - port: {{ .Values.server.config.https.port }}
+      targetPort: https-coord
       protocol: TCP
-      name: http
+      name: https-coord
   selector:
     app: {{ template "trino.name" . }}
     release: {{ .Release.Name }}

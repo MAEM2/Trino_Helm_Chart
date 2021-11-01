@@ -2,10 +2,10 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "presto.fullname" . }}-monitor
+  name: {{ include "trino.fullname" . }}-monitor
   labels:
-    app: {{ template "presto.name" . }}
-    chart: {{ template "presto.chart" . }}
+    app: {{ template "trino.name" . }}
+    chart: {{ template "trino.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -14,10 +14,10 @@ spec:
       - {{ .Release.Namespace }}
   selector:
     matchLabels:
-      app: {{ template "presto.name" . }}
+      app: {{ template "trino.name" . }}
       monitoring.service: jmx
       release: {{ .Release.Name }}
-      chart: {{ template "presto.chart" . }}
+      chart: {{ template "trino.chart" . }}
   endpoints:
     - port: exporter
       path: /metrics

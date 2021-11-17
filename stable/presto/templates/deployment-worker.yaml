@@ -83,7 +83,12 @@ spec:
                 ]
           {{end }}
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+            limits:
+              cpu: {{ .Values.resources.worker.limits.cpu }}
+              memory: {{ .Values.resources.worker.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.worker.requests.cpu }}
+              memory: {{ .Values.resources.worker.requests.memory }}
 
 {{ if .Values.exporters.jmx.enabled }}
         - name: jmx-exporter
@@ -121,7 +126,12 @@ spec:
           {{- end }}
           {{- end }}
           resources:
-          {{ toYaml .Values.exporters.jmx.resources | indent 12 }}
+            limits:
+              cpu: {{ .Values.exporters.jmx.resources.worker.limits.cpu }}
+              memory: {{ .Values.exporters.jmx.resources.worker.limits.memory }}
+            requests:
+              cpu: {{ .Values.exporters.jmx.resources.worker.requests.cpu }}
+              memory: {{ .Values.exporters.jmx.resources.worker.requests.memory }}
           volumeMounts:
             - name: config-jmx-exporter
               mountPath: /opt/jmx_exporter/config.yml

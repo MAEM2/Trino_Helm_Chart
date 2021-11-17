@@ -96,7 +96,12 @@ spec:
               path: /v1/info
               port: http
           resources:
-{{ toYaml .Values.resources | indent 12 }}
+            limits:
+              cpu: {{ .Values.resources.coordinator.limits.cpu }}
+              memory: {{ .Values.resources.coordinator.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.coordinator.requests.cpu }}
+              memory: {{ .Values.resources.coordinator.requests.memory }}
 
 {{ if .Values.exporters.jmx.enabled }}
         - name: jmx-exporter
@@ -134,7 +139,12 @@ spec:
           {{- end }}
           {{- end }}
           resources:
-          {{ toYaml .Values.exporters.jmx.resources | indent 12 }}
+            limits:
+              cpu: {{ .Values.exporters.jmx.resources.coordinator.limits.cpu }}
+              memory: {{ .Values.exporters.jmx.resources.coordinator.limits.memory }}
+            requests:
+              cpu: {{ .Values.exporters.jmx.resources.coordinator.requests.cpu }}
+              memory: {{ .Values.exporters.jmx.resources.coordinator.requests.memory }}
           volumeMounts:
             - name: config-jmx-exporter
               mountPath: /opt/jmx_exporter/config.yml

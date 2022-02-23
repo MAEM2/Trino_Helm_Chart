@@ -8,6 +8,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     component: coordinator
+    microservice: trino-coordinator
 spec:
   selector:
     matchLabels:
@@ -20,6 +21,9 @@ spec:
         app: {{ template "trino.name" . }}
         release: {{ .Release.Name }}
         component: coordinator
+        microservice: trino-coordinator
+      annotations:
+        "sidecar.istio.io/inject": "false"
     spec:
       {{- with .Values.image.securityContext }}
       securityContext:
@@ -38,7 +42,7 @@ spec:
           configMap:
             name: {{ template "trino.jmx-exporter" . }}
         {{end}}
-        {{ if .Values.server.config.https.enabled }} 
+        {{ if .Values.server.config.https.enabled }}
         - name: keystore-volume
           secret:
             secretName: {{ .Values.keystore.secret }}
@@ -55,21 +59,21 @@ spec:
               name: config-volume
             - mountPath: {{ .Values.server.config.pathCatalog }}
               name: config-volume-hive
-            {{ if .Values.server.config.https.enabled }}  
+            {{ if .Values.server.config.https.enabled }}
             - mountPath: {{ .Values.keystore.mountpath }}
               name: keystore-volume
             - mountPath: {{ .Values.passwordfile.mountpath }}
               name: passworddb-volume
-            {{end}}  
+            {{end}}
           ports:
             - name: http
               containerPort: {{ .Values.server.config.http.port }}
               protocol: TCP
-            {{ if .Values.server.config.https.enabled }}  
-            - name: https-coord
+            {{ if .Values.server.config.https.enabled }}
+            - name: https
               containerPort: {{ .Values.server.config.https.port }}
               protocol: TCP
-            {{end}} 
+            {{end}}
           env:
             - name: JAVA_OPTS
               value: -Dcom.amazonaws.sdk.disableCertChecking=true
@@ -103,7 +107,7 @@ spec:
               cpu: {{ .Values.resources.coordinator.requests.cpu }}
               memory: {{ .Values.resources.coordinator.requests.memory }}
 
-{{ if .Values.exporters.jmx.enabled }}
+      {{ if .Values.exporters.jmx.enabled }}
         - name: jmx-exporter
           image: "{{ .Values.exporters.jmx.image.repository }}:{{ .Values.exporters.jmx.image.tag }}"
           imagePullPolicy: {{ .Values.exporters.jmx.image.pullPolicy }}
@@ -149,14 +153,13 @@ spec:
             - name: config-jmx-exporter
               mountPath: /opt/jmx_exporter/config.yml
               subPath: config.yml
-      {{- end }}
+          {{- end }}
+
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}
     {{- with .Values.affinity }}
-    
-    
       affinity:
 {{ toYaml . | indent 8 }}
     {{- end }}

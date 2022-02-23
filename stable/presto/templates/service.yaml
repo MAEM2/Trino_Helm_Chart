@@ -32,15 +32,16 @@ spec:
   type: {{ .Values.service.externalType }}
   ports:
     - port: {{ .Values.server.config.https.port }}
-      targetPort: https-coord
+      targetPort: https
       protocol: TCP
-      name: https-coord
+      name: https
   selector:
     app: {{ template "trino.name" . }}
     release: {{ .Release.Name }}
     component: coordinator
----
+
   {{ if .Values.exporters.jmx.enabled }}
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -86,5 +87,5 @@ spec:
   selector:
     app: {{ template "trino.name" . }}
     release: {{ .Release.Name }}
-  {{end}}
 ---
+{{end}}

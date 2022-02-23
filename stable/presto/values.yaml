@@ -1,20 +1,5 @@
-keystore:
-  secret: trino-keystore
-  mountpath: /usr/lib/trino/etc/keystore
-  filepath: /usr/lib/trino/etc/keystore/keystore.jks
-  key: key
-passwordfile:
-  secret: trino-passworddb
-  mountpath: /usr/lib/trino/etc
-  filepath: /usr/lib/trino/etc/password.db
-
-storagegrid:
-  secret:
-  accessKey:
-  secretKey:
-
 server:
-  workers: 2
+  workers: 4
   node:
     environment: production
     dataDir: /data/trino
@@ -31,12 +16,12 @@ server:
       enabled: true
       port: 8443
     query:
-      maxMemory: "4GB"
-      maxTotalMemory: "6GB"
-      maxMemoryPerNode: "2GB"
-      maxTotalMemoryPerNode: "4GB"
+      maxMemory: "20GB"
+      maxTotalMemory: "32GB"
+      maxMemoryPerNode: "6GB"
+      maxTotalMemoryPerNode: "10GB"
   jvm:
-    maxHeapSize: "8G"
+    maxHeapSize: "24G"
     gcMethod:
       type: "UseG1GC"
       g1:
@@ -44,9 +29,6 @@ server:
   jmx:
     registryPort: 9080
     serverPort: 9081
-  gracefulShutdown:
-    enabled: true
-    gracePeriodSeconds: 10
 
 image:
   repository: trinodb/trino
@@ -56,36 +38,26 @@ image:
     runAsUser: 1000
     runAsGroup: 1000
 
+
 service:
   type: ClusterIP
   externalType: NodePort
 
-resources: 
+resources:
   coordinator:
     limits:
-      cpu: 5000m
-      memory: 10000Mi
-    requests:
       cpu: 3000m
-      memory: 8000Mi
-  worker:
-    limits:
-      cpu: 3000m
-      memory: 10000Mi
+      memory: 30000Mi
     requests:
       cpu: 2000m
-      memory: 9000Mi
-      
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+      memory: 24000Mi
+  worker:
+    limits:
+      cpu: 2000m
+      memory: 30000Mi
+    requests:
+      cpu: 1000m
+      memory: 28000Mi
 
 nodeSelector: {}
 
@@ -95,16 +67,25 @@ affinity: {}
 
 hive:
   metastore:
-    uri: thrift://metastore:9083
+    uri: thrift://metastore-headless:9083
   s3:
+    endpoint: https://host:port
     ssl:
       enabled: true
-    endpoint: 127.0.0.1
     max-connections: 100
-#     storagegrid: 
-#     aws-access-key: 
-#     aws-secret-key: 
-
+storagegrid:
+  secret: dma-dev-storagegrid-access-key
+  accessKey:
+  secretKey:
+passwordfile:
+  secret: trino-passworddb
+  mountpath: /usr/lib/trino/etc
+  filepath: /usr/lib/trino/etc/password.db
+keystore:
+  secret: trino-keystore
+  mountpath: /usr/lib/trino/etc/keystore
+  filepath: /usr/lib/trino/etc/keystore/keystore.jks
+  key: key
 exporters:
   jmx:
     enabled: true
@@ -112,228 +93,42 @@ exporters:
       repository: sscaling/jmx-prometheus-exporter
       tag: 0.3.0
       pullPolicy: IfNotPresent
-
     port: 9999
+    env: {}
+    resources:
+      coordinator:
+        limits:
+          cpu: 3000m
+          memory: 10000Mi
+        requests:
+          cpu: 1000m
+          memory: 8000Mi
+      worker:
+        limits:
+          cpu: 1000m
+          memory: 3000Mi
+        requests:
+          cpu: 800m
+          memory: 2000Mi
+
     config:
       jmxUrl: service:jmx:rmi:///jndi/rmi://127.0.0.1:9080/jmxrmi
       lowercaseOutputName: true
       lowercaseOutputLabelNames: true
 
       whitelistObjectNames:
-        - 'io.airlift.http.client:*'
-        - 'io.airlift.http.server:*'
-        - 'io.airlift.node:*'
-        - 'io.airlift.stats:*'
-        - 'java.lang:*'
-        - 'java.nio:*'
-        - 'trino.execution:*'
-        - 'trino.execution.executor:*'
-        - 'trino.execution.resourcegroups:*'
-        - 'trino.failuredetector:*'
-        - 'trino.memory:*'
-        - 'trino.metadata:*'
-        - 'trino.plugin.hive:*'
-        - 'trino.plugin.hive.metastore.cache:*'
-        - 'trino.plugin.hive.metastore.glue:*'
-        # Enable and add rules for thrift metastore stats if required
-        # - 'trino.plugin.hive.metastore.thrift:*'
-        - 'trino.plugin.hive.s3:*'
-        - 'trino.security:*'
-        - 'trino.sql.gen:*'
-        - 'trino.sql.planner.iterative:*'
-        - 'trino.sql.planner.optimizations:*'
-
+      - 'trino.execution:*'
+      - 'trino.execution.executor:*'
+      - 'trino.execution.resourcegroups:*'
+      - 'trino.failuredetector:*'
+      - 'trino.memory:*'
+      - 'trino.metadata:*'
+      - 'trino.security:*'
+      - 'trino.sql.gen:*'
+      - 'trino.sql.planner.iterative:*'
+      - 'trino.sql.planner.optimizations:*'
       rules:
-        # HTTP client stats {{{
-        - pattern: 'io.airlift.http.client<type=HttpClient, name=For(.+)><>(\dxx)Response.TotalCount'
-          name: 'trino_http_requests_total'
-          help: 'Number of HTTP requests made'
-          type: COUNTER
-          labels:
-            client: '$1'
-            code: '$2'
-        - pattern: 'io.airlift.http.client<type=HttpClient, name=For(.+)><>ConnectionStats.(Received|Sent)Bytes'
-          name: 'trino_http_bytes_total'
-          help: 'Bytes transferred for HTTP requests'
-          type: COUNTER
-          labels:
-            client: '$1'
-            direction: '$2'
-        - pattern: 'io.airlift.http.client<type=HttpClient, name=For(.+)><>ConnectionStats.OpenConnectionCount'
-          name: 'trino_http_open_connections'
-          help: 'Number of open HTTP connections'
-          type: GAUGE
-          labels:
-            client: '$1'
-        - pattern: 'io.airlift.http.client<type=HttpClient, name=For(.+)><>ConnectionStats.MaxOpenConnections'
-          name: 'trino_http_open_connections_max'
-          help: 'Maximum observed number of open HTTP connections'
-          type: GAUGE
-          labels:
-            client: '$1'
-        - pattern: 'io.airlift.http.client<type=HttpClient, name=For(.+)><>QueuedRequestsPerDestination.Count'
-          name: 'trino_http_queued_requests_per_destination'
-          help: 'Number of HTTP requests queued per destination'
-          type: GAUGE
-          labels:
-            client: '$1'
-        - pattern: 'io.airlift.http.client<type=HttpClient, name=For(.+)><>QueuedRequestsPerDestination.Max'
-          name: 'trino_http_queued_requests_per_destination_max'
-          help: 'Maximum observed number of HTTP requests queued per destination'
-          type: GAUGE
-          labels:
-            client: '$1'
-        - pattern: 'io.airlift.http.client<type=HttpClient, name=For(.+)><>ThreadPool.(Max|Min|Busy|Idle|)Threads'
-          name: 'trino_http_thread_pool_$2_threads'
-          help: '$2 threads in HTTP client thread pool'
-          type: GAUGE
-          labels:
-            client: '$1'
-        # }}}
-
-        # HTTP server stats {{{
-        - pattern: 'io.airlift.http.server<name=HttpServer><>DaysUntilCertificateExpiration'
-          name: 'trino_http_server_certificate_expiry_days'
-          help: 'Number of days until server certificate expiry'
-          type: GAUGE
-        - pattern: 'io.airlift.http.server<type=HttpServer><>HttpConnectionStats.(Received|Sent)Bytes'
-          name: 'trino_http_server_bytes_total'
-          help: 'Bytes transferred for serving HTTP requests'
-          type: COUNTER
-          labels:
-            direction: '$1'
-        - pattern: 'io.airlift.http.server<name=HttpServer><>HttpConnectionStats.OpenConnectionCount'
-          name: 'trino_http_server_open_connections'
-          help: 'Number of open connections on the HTTP server'
-          type: GAUGE
-        - pattern: 'io.airlift.http.server<name=HttpServer><>HttpConnectionStats.MaxOpenConnections'
-          name: 'trino_http_server_open_connections_max'
-          help: 'Maximum observed number of open connections on the HTTP server'
-          type: GAUGE
-        # }}}
-
-        # Node Info {{{
-        - pattern: 'io.airlift.node<name=NodeInfo><>(Environment|ExternalAddress|InstanceId|InternalAddress|NodeId|StartTime): (.+)'
-          name: 'trino_node_info'
-          value: 1
-          help: 'A metric with constant 1 value labelled with node information'
-          type: GAUGE
-          labels:
-            '$1': '$2'
-        # }}}
-
-        # JVM pause stats {{{
-        - pattern: 'io.airlift.stats<name=PauseMeter><>(.+)Pauses'
-          name: 'trino_pauses_total'
-          help: 'Total number of JVM pauses'
-          type: COUNTER
-          labels:
-            bucket: '$1'
-        - pattern: 'io.airlift.stats<name=PauseMeter><>TotalPauseSeconds'
-          name: 'trino_pause_seconds_total'
-          help: 'Total time in seconds for which JVM was paused'
-          type: COUNTER
-        # }}}
-
-        # JVM stats {{{
-        # GC and Memory {{{
-        - pattern: 'java.lang<name=(.+), type=GarbageCollector><>CollectionCount'
-          name: 'jvm_gc_total'
-          help: 'Total number of garbage collections'
-          type: COUNTER
-          labels:
-            name: '$1'
-        - pattern: 'java.lang<name=(.+), type=GarbageCollector><>CollectionTime'
-          valueFactor: 0.001
-          name: 'jvm_gc_time_seconds_total'
-          help: 'Total time in seconds spent on garbage collections'
-          type: COUNTER
-          labels:
-            name: '$1'
-        - pattern: 'java.lang<name=(.+), type=GarbageCollector><LastGcInfo>duration'
-          valueFactor: 0.000001
-          name: 'jvm_gc_duration_seconds'
-          help: 'Garbage collection duration in seconds'
-          type: GAUGE
-          labels:
-            name: '$1'
-        - pattern: 'java.lang<name=(.+), type=GarbageCollector><LastGcInfo>GcThreadCount'
-          name: 'jvm_gc_threads'
-          help: 'Garbage collection threads used'
-          type: GAUGE
-          labels:
-            name: '$1'
-        - pattern: 'java.lang<type=Memory><(Heap|NonHeap)MemoryUsage>(max|init|committed|used)'
-          name: 'jvm_memory_$2_bytes'
-          help: '$2 bytes in $1 memory'
-          type: GAUGE
-          labels:
-            area: '$1'
-        # }}}
-
-        # OS stats {{{
-        - pattern: 'java.lang<type=OperatingSystem><>AvailableProcessors'
-          name: 'jvm_os_processors'
-          help: 'Number of CPU cores available'
-          type: GAUGE
-        - pattern: 'java.lang<type=OperatingSystem><>(CommittedVirtualMemory|FreePhysicalMemory|TotalPhysicalMemory|FreeSwapSpace|TotalSwapSpace)Size'
-          name: 'jvm_os_$1_bytes'
-          help: '$1 in bytes'
-          type: GAUGE
-        - pattern: 'java.lang<type=OperatingSystem><>(Max|Open)FileDescriptorCount'
-          name: 'jvm_os_$1_file_descriptors'
-          help: '$1 file descriptors'
-          type: GAUGE
-        - pattern: 'java.lang<type=OperatingSystem><>(Process|System)CpuLoad'
-          name: 'jvm_os_$1_cpu_load'
-          help: '$1 cpu load'
-          type: GAUGE
-        - pattern: 'java.lang<type=OperatingSystem><>(Process|System)CpuTime'
-          name: 'jvm_os_$1_cpu_time_seconds'
-          help: '$1 cpu time in seconds'
-          type: COUNTER
-        - pattern: 'java.lang<type=OperatingSystem><>SystemLoadAverage'
-          name: 'jvm_os_system_load_avg'
-          help: 'System load average'
-          type: GAUGE
-        - pattern: 'java.lang<type=OperatingSystem><>(Arch|Name|Version): (.+)'
-          name: 'jvm_os_info'
-          value: 1
-          help: 'A metric with constant 1 value labelled with OS information'
-          type: GAUGE
-          labels:
-            '$1': '$2'
-        - pattern: 'java.lang<type=Runtime><>Uptime'
-          valueFactor: 0.001
-          name: 'jvm_runtime_uptime_seconds'
-          help: 'JVM uptime in seconds'
-          type: COUNTER
-        # }}}
-
-        # Threading stats {{{
-        - pattern: 'java.lang<type=Threading><>(Daemon|Peak|TotalStarted|)ThreadCount'
-          name: 'jvm_threading_$1_threads'
-          help: 'JVM $1 thread count'
-          type: GAUGE
-        # }}}
-        # }}}
-
-        # NIO stats {{{
-        - pattern: 'java.nio<name=(.+), type=BufferPool><>Count'
-          name: 'jvm_nio_buffer_pool_buffers'
-          help: 'Number of buffers in NIO buffer pool'
-          type: GAUGE
-          labels:
-            pool: '$1'
-        - pattern: 'java.nio<name=(.+), type=BufferPool><>(MemoryUsed|TotalCapacity)'
-          name: 'jvm_nio_buffer_pool_$2_bytes'
-          help: 'NIO buffer pool $2 in bytes'
-          type: GAUGE
-          labels:
-            pool: '$1'
-        # }}}
-
-        # Presto execution stats {{{
+        # Trino execution stats {{{
         - pattern: 'trino.execution<name=ClusterSizeMonitor><>RequiredWorkers'
           name: 'trino_cluster_size_monitor_required_workers'
           help: 'Number of workers required in cluster'
@@ -412,7 +207,7 @@ exporters:
             type: '$1'
         # }}}
 
-        # Presto executor stats {{{
+        # Trino executor stats {{{
         # MLFQ stats {{{
         - pattern: 'trino.execution.executor<name=MultilevelSplitQueue><>Level(\d)Time'
           valueFactor: 0.000000001
@@ -481,7 +276,7 @@ exporters:
         # }}}
         # }}}
 
-        # Presto resource group stats {{{
+        # Trino resource group stats {{{
         - pattern: 'trino.execution.resourcegroups<type=InternalResourceGroup, name=(.+)><>(HardConcurrencyLimit|MaxQueuedQueries|QueuedQueries|RunningQueries|WaitingQueuedQueries)'
           name: 'trino_resourcegroups_$2'
           help: '$2 for the labelled resource group name'
@@ -490,14 +285,14 @@ exporters:
             group: '$1'
         # }}}
 
-        # Presto cluster size {{{
+        # Trino cluster size {{{
         - pattern: 'trino.failuredetector<name=HeartbeatFailureDetector><>(Active|Failed|Total)Count'
           name: 'trino_failuredetector_$1_nodes'
           help: 'Number of $1 nodes observed by the failure detector'
           type: GAUGE
         # }}}
 
-        # Presto memory stats {{{
+        # Trino memory stats {{{
         - pattern: 'trino.memory<name=ClusterMemoryManager><>Cluster(MemoryBytes|TotalMemoryReservation|UserMemoryReservation)'
           name: 'trino_cluster_memory_manager_$1_bytes'
           help: 'Cluster $1 in bytes'
@@ -534,125 +329,13 @@ exporters:
             pool: '$1'
         # }}}
 
-        # Presto metadata {{{
+        # Trino metadata {{{
         - pattern: 'trino.metadata<name=DiscoveryNodeManager><>(Active|Inactive|ShuttingDown)NodeCount'
           name: 'trino_metadata_$1_nodes'
           help: 'Number of $1 nodes as seen by discovery service'
           type: GAUGE
         # }}}
-
-        # Hive plugin stats {{{
-        - pattern: 'trino.plugin.hive<type=CachingDirectoryLister, name=(.+)><>(Hit|Miss|Request)Count'
-          name: 'trino_plugin_hive_caching_directory_lister_$2_count_total'
-          help: '$2 count of the CachingDirectoryLister for the labelled catalog'
-          type: COUNTER
-          labels:
-            catalog: '$1'
-
-        # FileFormatDataSourceStats {{{
-        - pattern: 'trino.plugin.hive<type=FileFormatDataSourceStats, name=(.+)><>(0Bto100KB|100KBto1MB|1MBto10MB|10MBPlus).AllTime.Count'
-          name: 'trino_plugin_hive_file_format_stats_count_total'
-          help: 'Total number of files observed with the labelled sizes for the labelled catalog'
-          type: COUNTER
-          labels:
-            catalog: '$1'
-            bucket: '$2'
-
-        - pattern: 'trino.plugin.hive<type=FileFormatDataSourceStats, name=(.+)><>ReadBytes.AllTime.(Avg|Min|Max)'
-          name: 'trino_plugin_hive_file_format_stats_read_bytes_$2'
-          help: '$2 bytes read from the labelled catalog'
-          type: GAUGE
-          labels:
-            catalog: '$1'
-        - pattern: 'trino.plugin.hive<type=FileFormatDataSourceStats, name=(.+)><>ReadBytes.AllTime.P(\d+)'
-          name: 'trino_plugin_hive_file_format_stats_read_bytes_$2'
-          help: 'Bytes read from the labelled catalog for the labelled quantile'
-          type: GAUGE
-          labels:
-            catalog: '$1'
-            quantile: '0.$2'
-        - pattern: 'trino.plugin.hive<type=FileFormatDataSourceStats, name=(.+)><>ReadBytes.AllTime.Total'
-          name: 'trino_plugin_hive_file_format_stats_read_bytes_sum'
-          help: 'Total bytes read from the labelled catalog'
-          type: COUNTER
-          labels:
-            catalog: '$1'
-        # }}}
-
-        # NamenodeStats {{{
-        - pattern: 'trino.plugin.hive<type=NamenodeStats, name=(.+)><>(ListLocatedStatus|RemoteIteratorNext).Time.AllTime.(Avg|Min|Max)'
-          name: 'trino_plugin_hive_namenode_$2_seconds_$3'
-          help: '$3 time taken by $2 in seconds for the labelled catalog'
-          type: GAUGE
-          labels:
-            catalog: '$1'
-        - pattern: 'trino.plugin.hive<type=NamenodeStats, name=(.+)><>(ListLocatedStatus|RemoteIteratorNext).Time.AllTime.P(\d+)'
-          name: 'trino_plugin_hive_namenode_$2_seconds'
-          help: 'Time taken by $2 in seconds for the labelled quantile for the labelled catalog'
-          type: GAUGE
-          labels:
-            catalog: '$1'
-            quantile: '0.$3'
-        - pattern: 'trino.plugin.hive<type=NamenodeStats, name=(.+)><>(ListLocatedStatus|RemoteIteratorNext).Time.AllTime.Count'
-          name: 'trino_plugin_hive_namenode_$1_seconds_count'
-          help: 'Count of $2 for the labelled catalog'
-          type: COUNTER
-          labels:
-            catalog: '$1'
-        # }}}
-
-        # Hive and Glue metastore stats {{{
-        - pattern: 'trino.plugin.hive.metastore.cache<type=CachingHiveMetastore, name=(.+)><>(.+)Stats.(Hit|Miss)Rate'
-          name: 'trino_plugin_hive_metastore_$2_rate'
-          help: '$3 rate for the labelled catalog and operation'
-          type: GAUGE
-          labels:
-            catalog: '$1'
-            operation: '$2'
-        - pattern: 'trino.plugin.hive.metastore.glue<type=GlueHiveMetastore, name=(.+)><>(.+)Stats.(Hit|Miss)Rate'
-          name: 'trino_plugin_hive_metastore_$2_rate'
-          help: '$3 rate for the labelled catalog and operation'
-          type: GAUGE
-          labels:
-            catalog: '$1'
-            operation: '$2'
-        # }}}
-
-        # Presto S3 filesystem {{{
-        - pattern: 'trino.plugin.hive.s3<type=PrestoS3FileSystem, name=(.+), catalog=(.+)><>(.+).TotalCount'
-          name: 'trino_plugin_hive_s3_$3_count_total'
-          help: 'Total count of $3 for the labelled catalog'
-          type: COUNTER
-          labels:
-            catalog: '$2'
-
-        # AWS API calls histograms/summaries
-        - pattern: 'trino.plugin.hive.s3<type=PrestoS3FileSystem, name=(.+), catalog=(.+)><>(.+).AllTime.(Avg|Min|Max)'
-          valueFactor: 0.001
-          name: 'trino_plugin_hive_s3_$3_seconds_$4'
-          help: '$4 $3 in seconds for the labelled catalog'
-          type: GAUGE
-          labels:
-            catalog: '$2'
-        - pattern: 'trino.plugin.hive.s3<type=PrestoS3FileSystem, name=(.+), catalog=(.+)><>(.+).AllTime.P(\d+)'
-          valueFactor: 0.001
-          name: 'trino_plugin_hive_s3_$3_seconds'
-          help: '$3 in seconds for the labelled quantile and catalog'
-          type: GAUGE
-          labels:
-            catalog: '$2'
-            quantile: '0.$4'
-        - pattern: 'trino.plugin.hive.s3<type=PrestoS3FileSystem, name=(.+), catalog=(.+)><>(.+).AllTime.Count'
-          valueFactor: 0.001
-          name: 'trino_plugin_hive_s3_$3_seconds_count'
-          help: '$3 in seconds count for the labelled catalog'
-          type: COUNTER
-          labels:
-            catalog: '$2'
-        # }}}
-        # }}}
-
-        # Presto security stats {{{
+        # Trino security stats {{{
         - pattern: 'trino.security<name=AccessControlManager><>(.+).TotalCount'
           name: 'trino_security_$1_count_total'
           help: 'Number of $1'
@@ -695,25 +378,3 @@ exporters:
             rule: '$3'
             # }}}
       startDelaySeconds: 30
-    env: {}
-    resources:
-      coordinator:
-        limits:
-          cpu: 3000m
-          memory: 5000Mi
-        requests:
-          cpu: 1000m
-          memory: 4000Mi
-      worker:
-        limits:
-          cpu: 1000m
-          memory: 3000Mi
-        requests:
-          cpu: 800m
-          memory: 2000Mi
-    path: /metrics
-
-    serviceMonitor:
-      interval: 30s
-      scrapeTimeout: 30s
-      scheme: http

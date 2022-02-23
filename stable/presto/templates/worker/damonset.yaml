@@ -85,13 +85,13 @@ spec:
 #     {{- else if .Values.serviceAccount }}
 #       serviceAccountName: {{ .Values.serviceAccount }}
 #     {{- end }}
-#       {{- if .Values.imagePullSecrets }}
-# {{ include "alluxio.imagePullSecrets" . | indent 6 }}
+#       {{- if .Values.alluxio.imagePullSecrets }}
+# {{ include "alluxio.alluxio.imagePullSecrets" . | indent 6 }}
 #       {{- end}}
       containers:
         - name: alluxio-worker
-          image: {{ .Values.image }}:{{ .Values.imageTag }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          image: {{ .Values.alluxio.image }}:{{ .Values.alluxio.imageTag }}
+          imagePullPolicy: {{ .Values.alluxio.imagePullPolicy }}
           securityContext:
             runAsUser: {{ .Values.worker.user }}
 #             runAsGroup: {{ .Values.group }}
@@ -188,8 +188,8 @@ spec:
 {{- include "alluxio.worker.otherVolumeMounts" . }}
             {{- end }}
         - name: alluxio-job-worker
-          image: {{ .Values.image }}:{{ .Values.imageTag }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          image: {{ .Values.alluxio.image }}:{{ .Values.alluxio.imageTag }}
+          imagePullPolicy: {{ .Values.alluxio.imagePullPolicy }}
           {{- if .Values.jobWorker.resources  }}
 {{ include "alluxio.jobWorker.resources" . | indent 10 }}
           {{- end }}

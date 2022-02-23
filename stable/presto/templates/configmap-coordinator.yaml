@@ -50,15 +50,13 @@ data:
     query.max-total-memory-per-node={{ .Values.server.config.query.maxTotalMemoryPerNode }}
     discovery-server.enabled=true
     discovery.uri=http://localhost:{{ .Values.server.config.http.port }}
-    
     {{ if .Values.server.config.https.enabled }}
-    http-server.https.enabled={{ .Values.server.config.https.enabled }}
+    http-server.https.enabled=true
     http-server.https.port={{ .Values.server.config.https.port }}
     http-server.https.keystore.path={{ .Values.keystore.filepath }}
     http-server.https.keystore.key={{ .Values.keystore.key }}
     http-server.authentication.type=PASSWORD
-    {{end}}
-    
+    {{end }}
     {{ if .Values.exporters.jmx.enabled }}
     jmx.rmiregistry.port={{ .Values.server.jmx.registryPort }}
     jmx.rmiserver.port={{ .Values.server.jmx.serverPort }}
@@ -66,9 +64,8 @@ data:
     {{ range $key,$value := .Values.server.config.additional_params }}
     {{ $key }}={{ $value }}
   {{end}}
-
   log.properties: |
-    io.trinosql={{ .Values.server.log.trino.level }}
+    io.trino={{ .Values.server.log.trino.level }}
 {{ if .Values.server.config.https.enabled }}
   password-authenticator.properties: |
     password-authenticator.name=file

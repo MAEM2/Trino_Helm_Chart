@@ -393,9 +393,10 @@ s3:
 ## Common ##
 
 # Docker Image
-image: alluxio/alluxio
-imageTag: 2.7.2
-imagePullPolicy: IfNotPresent
+alluxio: 
+  image: alluxio/alluxio
+  imageTag: 2.7.2
+  imagePullPolicy: IfNotPresent
 
 # Security Context
 user: 1000

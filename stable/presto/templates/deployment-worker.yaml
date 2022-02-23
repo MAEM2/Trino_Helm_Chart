@@ -9,6 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     component: worker
+    microservice: trino-worker
 spec:
   replicas: {{ .Values.server.workers }}
   selector:
@@ -22,6 +23,9 @@ spec:
         app: {{ template "trino.name" . }}
         release: {{ .Release.Name }}
         component: worker
+        microservice: trino-worker
+      annotations:
+        "sidecar.istio.io/inject": "false"
     spec:
       volumes:
         - name: config-volume
@@ -73,15 +77,13 @@ spec:
             httpGet:
               path: /v1/info
               port: http
-          {{ if .Values.server.gracefulShutdown.enabled }}
           lifecycle:
             preStop:
               exec:
                 command: [
-                    "sh", "-c",
-                    "curl -v  -H \"X-Trino-User: admin\" -X PUT -d '\"SHUTTING_DOWN\"' -H \"Content-type: application/json\" http://localhost:8080/v1/info/state && sleep {{ .Values.server.gracefulShutdown.gracePeriodSeconds }}"
+                  "sh", "-c",
+                  "curl -v  -H \"X-Trino-User: admin\" -X PUT -d '\"SHUTTING_DOWN\"' -H \"Content-type: application/json\" http://localhost:8080/v1/info/state && sleep 10"
                 ]
-          {{end }}
           resources:
             limits:
               cpu: {{ .Values.resources.worker.limits.cpu }}
@@ -90,7 +92,7 @@ spec:
               cpu: {{ .Values.resources.worker.requests.cpu }}
               memory: {{ .Values.resources.worker.requests.memory }}
 
-{{ if .Values.exporters.jmx.enabled }}
+  {{ if .Values.exporters.jmx.enabled }}
         - name: jmx-exporter
           image: "{{ .Values.exporters.jmx.image.repository }}:{{ .Values.exporters.jmx.image.tag }}"
           imagePullPolicy: {{ .Values.exporters.jmx.image.pullPolicy }}
@@ -136,7 +138,7 @@ spec:
             - name: config-jmx-exporter
               mountPath: /opt/jmx_exporter/config.yml
               subPath: config.yml
-      {{- end }}
+          {{- end }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

@@ -1,4 +1,4 @@
-alluxio:
+alluxio: 
   fullnameOverride: alluxio
 
   image: alluxio/alluxio

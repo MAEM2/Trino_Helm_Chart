@@ -47,105 +47,105 @@ spec:
             sizeLimit: 1G
 
       containers:
-        - name: trino-worker
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          volumeMounts:
-            - mountPath: {{ .Values.server.config.path }}
-              name: config-volume
-            - mountPath: {{ .Values.server.config.pathCatalog }}
-              name: config-volume-hive
-          env:
-            - name: JAVA_OPTS
-              value: -Dcom.amazonaws.sdk.disableCertChecking=true
-            - name: JAVA_TOOL_OPTIONS
-              value: -Dcom.amazonaws.sdk.disableCertChecking=true
-            - name: _JAVA_OPTIONS
-              value: -Dcom.amazonaws.sdk.disableCertChecking=true
-            - name: AWS_ACCESS_KEY_ID
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.storagegrid.secret }}
-                  key: s3-access-key
-            - name: AWS_SECRET_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.storagegrid.secret }}
-                  key: s3-secret-key
-          ports:
-            - name: http
-              containerPort: {{ .Values.server.config.http.port }}
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /v1/info
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /v1/info
-              port: http
-          lifecycle:
-            preStop:
-              exec:
-                command: [
-                  "sh", "-c",
-                  "curl -v  -H \"X-Trino-User: admin\" -X PUT -d '\"SHUTTING_DOWN\"' -H \"Content-type: application/json\" http://localhost:8080/v1/info/state && sleep 10"
-                ]
-          resources:
-            limits:
-              cpu: {{ .Values.resources.worker.limits.cpu }}
-              memory: {{ .Values.resources.worker.limits.memory }}
-            requests:
-              cpu: {{ .Values.resources.worker.requests.cpu }}
-              memory: {{ .Values.resources.worker.requests.memory }}
+#         - name: trino-worker
+#           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+#           imagePullPolicy: {{ .Values.image.pullPolicy }}
+#           volumeMounts:
+#             - mountPath: {{ .Values.server.config.path }}
+#               name: config-volume
+#             - mountPath: {{ .Values.server.config.pathCatalog }}
+#               name: config-volume-hive
+#           env:
+#             - name: JAVA_OPTS
+#               value: -Dcom.amazonaws.sdk.disableCertChecking=true
+#             - name: JAVA_TOOL_OPTIONS
+#               value: -Dcom.amazonaws.sdk.disableCertChecking=true
+#             - name: _JAVA_OPTIONS
+#               value: -Dcom.amazonaws.sdk.disableCertChecking=true
+#             - name: AWS_ACCESS_KEY_ID
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: {{ .Values.storagegrid.secret }}
+#                   key: s3-access-key
+#             - name: AWS_SECRET_ACCESS_KEY
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: {{ .Values.storagegrid.secret }}
+#                   key: s3-secret-key
+#           ports:
+#             - name: http
+#               containerPort: {{ .Values.server.config.http.port }}
+#               protocol: TCP
+#           livenessProbe:
+#             httpGet:
+#               path: /v1/info
+#               port: http
+#           readinessProbe:
+#             httpGet:
+#               path: /v1/info
+#               port: http
+#           lifecycle:
+#             preStop:
+#               exec:
+#                 command: [
+#                   "sh", "-c",
+#                   "curl -v  -H \"X-Trino-User: admin\" -X PUT -d '\"SHUTTING_DOWN\"' -H \"Content-type: application/json\" http://localhost:8080/v1/info/state && sleep 10"
+#                 ]
+#           resources:
+#             limits:
+#               cpu: {{ .Values.resources.worker.limits.cpu }}
+#               memory: {{ .Values.resources.worker.limits.memory }}
+#             requests:
+#               cpu: {{ .Values.resources.worker.requests.cpu }}
+#               memory: {{ .Values.resources.worker.requests.memory }}
 
-  {{ if .Values.exporters.jmx.enabled }}
-        - name: jmx-exporter
-          image: "{{ .Values.exporters.jmx.image.repository }}:{{ .Values.exporters.jmx.image.tag }}"
-          imagePullPolicy: {{ .Values.exporters.jmx.image.pullPolicy }}
-          ports:
-            - containerPort: {{ .Values.exporters.jmx.port }}
-              protocol: TCP
-              name: exporter
-          livenessProbe:
-            httpGet:
-              path: /metrics
-              port: exporter
-            initialDelaySeconds: 30
-            periodSeconds: 15
-            timeoutSeconds: 60
-            failureThreshold: 8
-            successThreshold: 1
-          readinessProbe:
-            httpGet:
-              path: /metrics
-              port: exporter
-            initialDelaySeconds: 30
-            periodSeconds: 15
-            timeoutSeconds: 60
-            failureThreshold: 8
-            successThreshold: 1
-          env:
-            - name: SERVICE_PORT
-              value: {{ .Values.exporters.jmx.port | quote }}
-            {{- with .Values.exporters.jmx.env }}
-            {{- range $key, $value := . }}
-            - name: {{ $key | upper | replace "." "_" }}
-              value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
-          resources:
-            limits:
-              cpu: {{ .Values.exporters.jmx.resources.worker.limits.cpu }}
-              memory: {{ .Values.exporters.jmx.resources.worker.limits.memory }}
-            requests:
-              cpu: {{ .Values.exporters.jmx.resources.worker.requests.cpu }}
-              memory: {{ .Values.exporters.jmx.resources.worker.requests.memory }}
-          volumeMounts:
-            - name: config-jmx-exporter
-              mountPath: /opt/jmx_exporter/config.yml
-              subPath: config.yml
-          {{- end }}
+#   {{ if .Values.exporters.jmx.enabled }}
+#         - name: jmx-exporter
+#           image: "{{ .Values.exporters.jmx.image.repository }}:{{ .Values.exporters.jmx.image.tag }}"
+#           imagePullPolicy: {{ .Values.exporters.jmx.image.pullPolicy }}
+#           ports:
+#             - containerPort: {{ .Values.exporters.jmx.port }}
+#               protocol: TCP
+#               name: exporter
+#           livenessProbe:
+#             httpGet:
+#               path: /metrics
+#               port: exporter
+#             initialDelaySeconds: 30
+#             periodSeconds: 15
+#             timeoutSeconds: 60
+#             failureThreshold: 8
+#             successThreshold: 1
+#           readinessProbe:
+#             httpGet:
+#               path: /metrics
+#               port: exporter
+#             initialDelaySeconds: 30
+#             periodSeconds: 15
+#             timeoutSeconds: 60
+#             failureThreshold: 8
+#             successThreshold: 1
+#           env:
+#             - name: SERVICE_PORT
+#               value: {{ .Values.exporters.jmx.port | quote }}
+#             {{- with .Values.exporters.jmx.env }}
+#             {{- range $key, $value := . }}
+#             - name: {{ $key | upper | replace "." "_" }}
+#               value: {{ $value | quote }}
+#           {{- end }}
+#           {{- end }}
+#           resources:
+#             limits:
+#               cpu: {{ .Values.exporters.jmx.resources.worker.limits.cpu }}
+#               memory: {{ .Values.exporters.jmx.resources.worker.limits.memory }}
+#             requests:
+#               cpu: {{ .Values.exporters.jmx.resources.worker.requests.cpu }}
+#               memory: {{ .Values.exporters.jmx.resources.worker.requests.memory }}
+#           volumeMounts:
+#             - name: config-jmx-exporter
+#               mountPath: /opt/jmx_exporter/config.yml
+#               subPath: config.yml
+#           {{- end }}
 
 #        alluxio container
         - name: trino-alluxio-worker

@@ -40,7 +40,6 @@ spec:
         - name: alluxio-domain
           hostPath:
             path: /tmp/alluxio-domain
-            type: DirectoryOrCreate
         - name: mem
           emptyDir:
             medium: Memory

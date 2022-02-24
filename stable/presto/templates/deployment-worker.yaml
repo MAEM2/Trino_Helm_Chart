@@ -1,4 +1,12 @@
 {{- if gt (int .Values.server.workers) 0 }}
+
+{{- if not (eq .Values.alluxio.worker.enabled false) -}}
+
+{{- $shortCircuitEnabled := .Values.alluxio.shortCircuit.enabled }}
+{{- $needDomainSocketVolume := and $shortCircuitEnabled (eq .Values.alluxio.shortCircuit.policy "uuid") }}
+{{- $hostNetwork := .Values.alluxio.worker.hostNetwork }}
+# {{- $hostPID := .Values.worker.hostPID }}
+{{- $fullName := include "alluxio.fullname" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,8 +32,6 @@ spec:
         release: {{ .Release.Name }}
         component: worker
         microservice: trino-worker
-      annotations:
-        "sidecar.istio.io/inject": "false"
     spec:
       volumes:
         - name: config-volume
@@ -39,6 +45,14 @@ spec:
           configMap:
             name: {{ template "trino.jmx-exporter" . }}
         {{ end }}
+        {{- if $needDomainSocketVolume }}
+        {{- include "alluxio.worker.shortCircuit.volume" . }}
+        {{- end }}
+
+        {{- if .Values.alluxio.tieredstore }}
+        {{- include "alluxio.worker.tieredstoreVolumes" . }}
+        {{- end}}
+
       containers:
         - name: {{ .Chart.Name }}-worker
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -139,6 +153,149 @@ spec:
               mountPath: /opt/jmx_exporter/config.yml
               subPath: config.yml
           {{- end }}
+
+#        alluxio container
+        - name: alluxio-worker
+          image: {{ .Values.alluxio.image }}:{{ .Values.alluxio.imageTag }}
+          imagePullPolicy: {{ .Values.alluxio.imagePullPolicy }}
+          securityContext:
+            runAsUser: {{ .Values.alluxio.worker.user }}
+      #             runAsGroup: {{ .Values.group }}
+          {{- if .Values.alluxio.worker.resources  }}
+          {{ include "alluxio.worker.resources" . | indent 10 }}
+          {{- end }}
+          command: [ "/entrypoint.sh"]
+          {{- if .Values.alluxio.worker.args }}
+          args:
+          {{ toYaml .Values.alluxio.worker.args | trim | indent 12 }}
+          {{- end }}
+          env:
+            - name: JAVA_OPTS
+              value: -Dcom.amazonaws.sdk.disableCertChecking=true
+            - name: JAVA_TOOL_OPTIONS
+              value: -Dcom.amazonaws.sdk.disableCertChecking=true
+            - name: _JAVA_OPTIONS
+              value: -Dcom.amazonaws.sdk.disableCertChecking=true
+            - name: ALLUXIO_WORKER_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: ALLUXIO_WORKER_CONTAINER_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          envFrom:
+            - configMapRef:
+                name: {{ template "alluxio.fullname" . }}-config
+          readinessProbe:
+            tcpSocket:
+              port: rpc
+            initialDelaySeconds: {{ .Values.alluxio.worker.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.alluxio.worker.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.alluxio.worker.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.alluxio.worker.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.alluxio.worker.readinessProbe.successThreshold }}
+          livenessProbe:
+            tcpSocket:
+              port: rpc
+            initialDelaySeconds: {{ .Values.alluxio.worker.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.alluxio.worker.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.alluxio.worker.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.alluxio.worker.livenessProbe.failureThreshold }}
+          {{- if .Values.alluxio.worker.startupProbe }}
+          startupProbe:
+            tcpSocket:
+              port: rpc
+            initialDelaySeconds: {{ .Values.alluxio.worker.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.alluxio.worker.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.alluxio.worker.startupProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.alluxio.worker.startupProbe.failureThreshold }}
+          {{- end}}
+          ports:
+            - containerPort: {{ .Values.alluxio.worker.ports.rpc }}
+              name: rpc
+            - containerPort: {{ .Values.alluxio.worker.ports.web }}
+              name: web
+          volumeMounts:
+            - name: alluxio-domain
+              mountPath: /opt/domain
+
+            {{- if .Values.alluxio.tieredstore -}}
+              {{- include "alluxio.worker.tieredstoreVolumeMounts" . }}
+            {{- end -}}
+
+        - name: alluxio-job-worker
+          image: {{ .Values.alluxio.image }}:{{ .Values.alluxio.imageTag }}
+          imagePullPolicy: {{ .Values.alluxio.imagePullPolicy }}
+          {{- if .Values.alluxio.jobWorker.resources  }}
+          {{ include "alluxio.jobWorker.resources" . | indent 10 }}
+          {{- end }}
+          command: [ "/entrypoint.sh"]
+          {{- if .Values.alluxio.jobWorker.args }}
+          args:
+          {{ toYaml .Values.alluxio.jobWorker.args | trim | indent 12 }}
+          {{- end }}
+          env:
+            - name: JAVA_OPTS
+              value: -Dcom.amazonaws.sdk.disableCertChecking=true
+            - name: JAVA_TOOL_OPTIONS
+              value: -Dcom.amazonaws.sdk.disableCertChecking=true
+            - name: _JAVA_OPTIONS
+              value: -Dcom.amazonaws.sdk.disableCertChecking=true
+            - name: ALLUXIO_WORKER_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: ALLUXIO_WORKER_CONTAINER_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          {{- range $key, $value := .Values.alluxio.jobWorker.env }}
+          - name: "{{ $key }}"
+            value: "{{ $value }}"
+          {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "alluxio.fullname" . }}-config
+          readinessProbe:
+            tcpSocket:
+              port: job-rpc
+            initialDelaySeconds: {{ .Values.alluxio.jobWorker.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.alluxio.jobWorker.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.alluxio.jobWorker.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.alluxio.jobWorker.readinessProbe.failureThreshold }}
+            successThreshold: {{ .Values.alluxio.jobWorker.readinessProbe.successThreshold }}
+          livenessProbe:
+            tcpSocket:
+              port: job-rpc
+            initialDelaySeconds: {{ .Values.alluxio.jobWorker.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.alluxio.jobWorker.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.alluxio.jobWorker.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.alluxio.jobWorker.livenessProbe.failureThreshold }}
+          {{- if .Values.alluxio.jobWorker.startupProbe }}
+          startupProbe:
+            tcpSocket:
+              port: job-rpc
+            initialDelaySeconds: {{ .Values.alluxio.jobWorker.startupProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.alluxio.jobWorker.startupProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.alluxio.jobWorker.startupProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.alluxio.jobWorker.startupProbe.failureThreshold }}
+          {{- end}}
+          ports:
+            - containerPort: {{ .Values.alluxio.jobWorker.ports.rpc }}
+              name: job-rpc
+            - containerPort: {{ .Values.alluxio.jobWorker.ports.data }}
+              name: job-data
+            - containerPort: {{ .Values.alluxio.jobWorker.ports.web }}
+              name: job-web
+          volumeMounts:
+            - name: alluxio-domain
+              mountPath: /opt/domain
+
+            {{- if .Values.alluxio.tieredstore }}
+            {{- include "alluxio.worker.tieredstoreVolumeMounts" . }}
+            {{- end }}
+
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

@@ -1,169 +1,169 @@
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: {{ template "trino.coordinator" . }}
-#   labels:
-#     app: {{ template "trino.name" . }}
-#     chart: {{ template "trino.chart" . }}
-#     release: {{ .Release.Name }}
-#     heritage: {{ .Release.Service }}
-#     component: coordinator
-#     microservice: trino-coordinator
-# spec:
-#   selector:
-#     matchLabels:
-#       app: {{ template "trino.name" . }}
-#       release: {{ .Release.Name }}
-#       component: coordinator
-#   template:
-#     metadata:
-#       labels:
-#         app: {{ template "trino.name" . }}
-#         release: {{ .Release.Name }}
-#         component: coordinator
-#         microservice: trino-coordinator
-#       annotations:
-#         "sidecar.istio.io/inject": "false"
-#     spec:
-#       {{- with .Values.image.securityContext }}
-#       securityContext:
-#         runAsUser: {{ .runAsUser }}
-#         runAsGroup: {{ .runAsGroup }}
-#       {{- end }}
-#       volumes:
-#         - name: config-volume
-#           configMap:
-#             name: {{ template "trino.coordinator" . }}
-#         - name: config-volume-hive
-#           configMap:
-#             name: {{ template "trino.hive" . }}
-#         {{ if .Values.exporters.jmx.enabled }}
-#         - name: config-jmx-exporter
-#           configMap:
-#             name: {{ template "trino.jmx-exporter" . }}
-#         {{end}}
-#         {{ if .Values.server.config.https.enabled }}
-#         - name: keystore-volume
-#           secret:
-#             secretName: {{ .Values.keystore.secret }}
-#         - name: passworddb-volume
-#           secret:
-#             secretName: {{ .Values.passwordfile.secret }}
-#         {{end}}
-#       containers:
-#         - name: {{ .Chart.Name }}-coordinator
-#           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-#           imagePullPolicy: {{ .Values.image.pullPolicy }}
-#           volumeMounts:
-#             - mountPath: {{ .Values.server.config.path }}
-#               name: config-volume
-#             - mountPath: {{ .Values.server.config.pathCatalog }}
-#               name: config-volume-hive
-#             {{ if .Values.server.config.https.enabled }}
-#             - mountPath: {{ .Values.keystore.mountpath }}
-#               name: keystore-volume
-#             - mountPath: {{ .Values.passwordfile.mountpath }}
-#               name: passworddb-volume
-#             {{end}}
-#           ports:
-#             - name: http
-#               containerPort: {{ .Values.server.config.http.port }}
-#               protocol: TCP
-#             {{ if .Values.server.config.https.enabled }}
-#             - name: https
-#               containerPort: {{ .Values.server.config.https.port }}
-#               protocol: TCP
-#             {{end}}
-#           env:
-#             - name: JAVA_OPTS
-#               value: -Dcom.amazonaws.sdk.disableCertChecking=true
-#             - name: JAVA_TOOL_OPTIONS
-#               value: -Dcom.amazonaws.sdk.disableCertChecking=true
-#             - name: _JAVA_OPTIONS
-#               value: -Dcom.amazonaws.sdk.disableCertChecking=true
-#             - name: AWS_ACCESS_KEY_ID
-#               valueFrom:
-#                 secretKeyRef:
-#                   name: {{ .Values.storagegrid.secret }}
-#                   key: s3-access-key
-#             - name: AWS_SECRET_ACCESS_KEY
-#               valueFrom:
-#                 secretKeyRef:
-#                   name: {{ .Values.storagegrid.secret }}
-#                   key: s3-secret-key
-#           livenessProbe:
-#             httpGet:
-#               path: /v1/info
-#               port: http
-#           readinessProbe:
-#             httpGet:
-#               path: /v1/info
-#               port: http
-#           resources:
-#             limits:
-#               cpu: {{ .Values.resources.coordinator.limits.cpu }}
-#               memory: {{ .Values.resources.coordinator.limits.memory }}
-#             requests:
-#               cpu: {{ .Values.resources.coordinator.requests.cpu }}
-#               memory: {{ .Values.resources.coordinator.requests.memory }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "trino.coordinator" . }}
+  labels:
+    app: {{ template "trino.name" . }}
+    chart: {{ template "trino.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: coordinator
+    microservice: trino-coordinator
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "trino.name" . }}
+      release: {{ .Release.Name }}
+      component: coordinator
+  template:
+    metadata:
+      labels:
+        app: {{ template "trino.name" . }}
+        release: {{ .Release.Name }}
+        component: coordinator
+        microservice: trino-coordinator
+      annotations:
+        "sidecar.istio.io/inject": "false"
+    spec:
+      {{- with .Values.image.securityContext }}
+      securityContext:
+        runAsUser: {{ .runAsUser }}
+        runAsGroup: {{ .runAsGroup }}
+      {{- end }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ template "trino.coordinator" . }}
+        - name: config-volume-hive
+          configMap:
+            name: {{ template "trino.hive" . }}
+        {{ if .Values.exporters.jmx.enabled }}
+        - name: config-jmx-exporter
+          configMap:
+            name: {{ template "trino.jmx-exporter" . }}
+        {{end}}
+        {{ if .Values.server.config.https.enabled }}
+        - name: keystore-volume
+          secret:
+            secretName: {{ .Values.keystore.secret }}
+        - name: passworddb-volume
+          secret:
+            secretName: {{ .Values.passwordfile.secret }}
+        {{end}}
+      containers:
+        - name: {{ .Chart.Name }}-coordinator
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: {{ .Values.server.config.path }}
+              name: config-volume
+            - mountPath: {{ .Values.server.config.pathCatalog }}
+              name: config-volume-hive
+            {{ if .Values.server.config.https.enabled }}
+            - mountPath: {{ .Values.keystore.mountpath }}
+              name: keystore-volume
+            - mountPath: {{ .Values.passwordfile.mountpath }}
+              name: passworddb-volume
+            {{end}}
+          ports:
+            - name: http
+              containerPort: {{ .Values.server.config.http.port }}
+              protocol: TCP
+            {{ if .Values.server.config.https.enabled }}
+            - name: https
+              containerPort: {{ .Values.server.config.https.port }}
+              protocol: TCP
+            {{end}}
+          env:
+            - name: JAVA_OPTS
+              value: -Dcom.amazonaws.sdk.disableCertChecking=true
+            - name: JAVA_TOOL_OPTIONS
+              value: -Dcom.amazonaws.sdk.disableCertChecking=true
+            - name: _JAVA_OPTIONS
+              value: -Dcom.amazonaws.sdk.disableCertChecking=true
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.storagegrid.secret }}
+                  key: s3-access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.storagegrid.secret }}
+                  key: s3-secret-key
+          livenessProbe:
+            httpGet:
+              path: /v1/info
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /v1/info
+              port: http
+          resources:
+            limits:
+              cpu: {{ .Values.resources.coordinator.limits.cpu }}
+              memory: {{ .Values.resources.coordinator.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.coordinator.requests.cpu }}
+              memory: {{ .Values.resources.coordinator.requests.memory }}
 
-#       {{ if .Values.exporters.jmx.enabled }}
-#         - name: jmx-exporter
-#           image: "{{ .Values.exporters.jmx.image.repository }}:{{ .Values.exporters.jmx.image.tag }}"
-#           imagePullPolicy: {{ .Values.exporters.jmx.image.pullPolicy }}
-#           ports:
-#             - containerPort: {{ .Values.exporters.jmx.port }}
-#               protocol: TCP
-#               name: exporter
-#           livenessProbe:
-#             httpGet:
-#               path: /metrics
-#               port: exporter
-#             initialDelaySeconds: 30
-#             periodSeconds: 15
-#             timeoutSeconds: 60
-#             failureThreshold: 8
-#             successThreshold: 1
-#           readinessProbe:
-#             httpGet:
-#               path: /metrics
-#               port: exporter
-#             initialDelaySeconds: 30
-#             periodSeconds: 15
-#             timeoutSeconds: 60
-#             failureThreshold: 8
-#             successThreshold: 1
-#           env:
-#             - name: SERVICE_PORT
-#               value: {{ .Values.exporters.jmx.port | quote }}
-#             {{- with .Values.exporters.jmx.env }}
-#             {{- range $key, $value := . }}
-#             - name: {{ $key | upper | replace "." "_" }}
-#               value: {{ $value | quote }}
-#           {{- end }}
-#           {{- end }}
-#           resources:
-#             limits:
-#               cpu: {{ .Values.exporters.jmx.resources.coordinator.limits.cpu }}
-#               memory: {{ .Values.exporters.jmx.resources.coordinator.limits.memory }}
-#             requests:
-#               cpu: {{ .Values.exporters.jmx.resources.coordinator.requests.cpu }}
-#               memory: {{ .Values.exporters.jmx.resources.coordinator.requests.memory }}
-#           volumeMounts:
-#             - name: config-jmx-exporter
-#               mountPath: /opt/jmx_exporter/config.yml
-#               subPath: config.yml
-#           {{- end }}
+      {{ if .Values.exporters.jmx.enabled }}
+        - name: jmx-exporter
+          image: "{{ .Values.exporters.jmx.image.repository }}:{{ .Values.exporters.jmx.image.tag }}"
+          imagePullPolicy: {{ .Values.exporters.jmx.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.exporters.jmx.port }}
+              protocol: TCP
+              name: exporter
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: exporter
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 60
+            failureThreshold: 8
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: exporter
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 60
+            failureThreshold: 8
+            successThreshold: 1
+          env:
+            - name: SERVICE_PORT
+              value: {{ .Values.exporters.jmx.port | quote }}
+            {{- with .Values.exporters.jmx.env }}
+            {{- range $key, $value := . }}
+            - name: {{ $key | upper | replace "." "_" }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          resources:
+            limits:
+              cpu: {{ .Values.exporters.jmx.resources.coordinator.limits.cpu }}
+              memory: {{ .Values.exporters.jmx.resources.coordinator.limits.memory }}
+            requests:
+              cpu: {{ .Values.exporters.jmx.resources.coordinator.requests.cpu }}
+              memory: {{ .Values.exporters.jmx.resources.coordinator.requests.memory }}
+          volumeMounts:
+            - name: config-jmx-exporter
+              mountPath: /opt/jmx_exporter/config.yml
+              subPath: config.yml
+          {{- end }}
 
-#     {{- with .Values.nodeSelector }}
-#       nodeSelector:
-# {{ toYaml . | indent 8 }}
-#     {{- end }}
-#     {{- with .Values.affinity }}
-#       affinity:
-# {{ toYaml . | indent 8 }}
-#     {{- end }}
-#     {{- with .Values.tolerations }}
-#       tolerations:
-# {{ toYaml . | indent 8 }}
-#     {{- end }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}

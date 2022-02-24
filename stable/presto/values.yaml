@@ -7,30 +7,23 @@ alluxio:
 
   tieredstore:
     levels:
-      - level: 0
-        alias: MEM
-        mediumtype: MEM
-        path: /dev/shm
-        type: emptyDir
-        quota: 1G
-        high: 0.95
-        low: 0.7
+    - level: 0
+      alias: MEM
+      mediumtype: MEM
+      path: /dev/shm
+      type: emptyDir
+      quota: 1G
+      high: 0.95
+      low: 0.7
   shortCircuit:
     enabled: true
-    # The policy for short circuit can be "local" or "uuid",
-    # local means the cache directory is in the same mount namespace,
-    # uuid means interact with domain socket
     policy: uuid
-    # volumeType controls the type of shortCircuit volume.
-    # It can be "persistentVolumeClaim" or "hostPath"
     volumeType: persistentVolumeClaim
     size: 1Mi
-    # Attributes to use if the domain socket volume is PVC
     pvcName: alluxio-worker-domain-socket
     accessModes:
       - ReadWriteOnce
     storageClass: standard
-    # Attributes to use if the domain socket volume is hostPath
     hostPath: "/tmp/alluxio-domain" # The hostPath directory to use
   worker:
     enabled: true

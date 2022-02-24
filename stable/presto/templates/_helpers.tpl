@@ -48,16 +48,7 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{- define "alluxio.fullname" -}}
-{{- if .Values.alluxio.fullnameOverride -}}
 {{- .Values.alluxio.fullnameOverride | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- $name := .Values.alluxio.nameOverride -}}
-{{- if contains $name .Release.Name -}}
-{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-{{- end -}}
 {{- end -}}
 
 {{- define "alluxio.worker.shortCircuit.volume" -}}

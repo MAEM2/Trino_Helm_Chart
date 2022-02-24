@@ -1,3 +1,4 @@
+fullnameOverride: trino
 alluxio: 
   image: alluxio/alluxio
   imageTag: 2.7.2

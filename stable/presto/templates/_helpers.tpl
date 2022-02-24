@@ -48,7 +48,7 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{- define "alluxio.fullname" -}}
-{{- .Values.alluxio.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- .Values.alluxio.fullnameOverride -}}
 {{- end -}}
 
 {{- define "alluxio.worker.shortCircuit.volume" -}}

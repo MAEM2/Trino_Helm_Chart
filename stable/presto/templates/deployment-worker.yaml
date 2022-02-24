@@ -148,7 +148,7 @@ spec:
           {{- end }}
 
 #        alluxio container
-        - name: alluxio-worker
+        - name: trino-alluxio-worker
           image: {{ .Values.alluxio.image }}:{{ .Values.alluxio.imageTag }}
           imagePullPolicy: {{ .Values.alluxio.imagePullPolicy }}
           securityContext:
@@ -208,7 +208,7 @@ spec:
             - name: mem
               mountPath: /dev/shm
 
-        - name: alluxio-job-worker
+        - name: trino-alluxio-job-worker
           image: {{ .Values.alluxio.image }}:{{ .Values.alluxio.imageTag }}
           imagePullPolicy: {{ .Values.alluxio.imagePullPolicy }}
           resources:

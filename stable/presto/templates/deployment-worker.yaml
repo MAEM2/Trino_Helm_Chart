@@ -1,11 +1,8 @@
 {{- if gt (int .Values.server.workers) 0 }}
 
-{{- if not (eq .Values.alluxio.worker.enabled false) -}}
-
 {{- $shortCircuitEnabled := .Values.alluxio.shortCircuit.enabled }}
 {{- $needDomainSocketVolume := and $shortCircuitEnabled (eq .Values.alluxio.shortCircuit.policy "uuid") }}
 {{- $hostNetwork := .Values.alluxio.worker.hostNetwork }}
-# {{- $hostPID := .Values.worker.hostPID }}
 {{- $fullName := include "alluxio.fullname" . }}
 apiVersion: apps/v1
 kind: Deployment

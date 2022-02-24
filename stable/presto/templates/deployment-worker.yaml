@@ -26,6 +26,8 @@ spec:
         component: worker
         microservice: trino-worker
     spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       volumes:
         - name: config-volume
           configMap:

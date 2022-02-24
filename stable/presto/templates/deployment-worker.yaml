@@ -46,7 +46,7 @@ spec:
             sizeLimit: 1G
 
       containers:
-        - name: {{ .Chart.Name }}-worker
+        - name: trino-worker
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:

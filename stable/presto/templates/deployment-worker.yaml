@@ -173,6 +173,16 @@ spec:
               value: -Dcom.amazonaws.sdk.disableCertChecking=true
             - name: _JAVA_OPTIONS
               value: -Dcom.amazonaws.sdk.disableCertChecking=true
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.storagegrid.secret }}
+                  key: s3-access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.storagegrid.secret }}
+                  key: s3-secret-key
             - name: ALLUXIO_WORKER_HOSTNAME
               valueFrom:
                 fieldRef:
@@ -230,6 +240,16 @@ spec:
               value: -Dcom.amazonaws.sdk.disableCertChecking=true
             - name: _JAVA_OPTIONS
               value: -Dcom.amazonaws.sdk.disableCertChecking=true
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.storagegrid.secret }}
+                  key: s3-access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.storagegrid.secret }}
+                  key: s3-secret-key
             - name: ALLUXIO_WORKER_HOSTNAME
               valueFrom:
                 fieldRef:

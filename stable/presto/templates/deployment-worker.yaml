@@ -40,13 +40,23 @@ spec:
           configMap:
             name: {{ template "trino.jmx-exporter" . }}
         {{ end }}
-        - name: alluxio-domain
+        - name: mem-0
           hostPath:
-            path: /tmp/alluxio-domain
-        - name: mem
-          emptyDir:
-            medium: Memory
-            sizeLimit: 1G
+            path: /alluxio/mem
+            type: DirectoryOrCreate
+        - name: hdd-1
+          hostPath:
+            path: /data1/alluxio/hdd1
+            type: DirectoryOrCreate  
+        - name: hdd-2
+          hostPath:
+            path: /data1/alluxio/hdd2
+            type: DirectoryOrCreate
+
+#         - name: mem
+#           emptyDir:
+#             medium: Memory
+#             sizeLimit: 1G
 
       containers:
         - name: trino-worker
@@ -215,10 +225,12 @@ spec:
             - containerPort: 30000
               name: web
           volumeMounts:
-            - name: alluxio-domain
-              mountPath: /opt/domain
-            - name: mem
-              mountPath: /dev/shm
+            - mountPath: /alluxio/mem
+              name: mem-0
+            - mountPath: /data1/alluxio/hdd1
+              name: hdd-1
+            - mountPath: /data1/alluxio/hdd2
+              name: hdd-2
 
         - name: trino-alluxio-job-worker
           image: {{ .Values.alluxio.image }}:{{ .Values.alluxio.imageTag }}
@@ -284,10 +296,12 @@ spec:
             - containerPort: 30003
               name: job-web
           volumeMounts:
-            - name: alluxio-domain
-              mountPath: /opt/domain
-            - name: mem
-              mountPath: /dev/shm
+            - mountPath: /alluxio/mem
+              name: mem-0
+            - mountPath: /data1/alluxio/hdd1
+              name: hdd-1
+            - mountPath: /data1/alluxio/hdd2
+              name: hdd-2
 
     {{- with .Values.nodeSelector }}
       nodeSelector:

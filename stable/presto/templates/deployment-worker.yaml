@@ -201,6 +201,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            - name: ALLUXIO_USER_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
           envFrom:
             - configMapRef:
                 name: alluxio-config
@@ -270,6 +274,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            - name: ALLUXIO_USER_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
           envFrom:
             - configMapRef:
                 name: alluxio-config

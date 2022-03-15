@@ -110,13 +110,13 @@ spec:
             requests:
               cpu: {{ .Values.resources.worker.requests.cpu }}
               memory: {{ .Values.resources.worker.requests.memory }}
-          volumeMounts:
-            - mountPath: /alluxio/mem
-              name: mem-0
-            - mountPath: /data1/alluxio/hdd1
-              name: hdd-1
-            - mountPath: /data1/alluxio/hdd2
-              name: hdd-2
+#           volumeMounts:
+#             - mountPath: /alluxio/mem
+#               name: mem-0
+#             - mountPath: /data1/alluxio/hdd1
+#               name: hdd-1
+#             - mountPath: /data1/alluxio/hdd2
+#               name: hdd-2
 
   {{ if .Values.exporters.jmx.enabled }}
         - name: jmx-exporter

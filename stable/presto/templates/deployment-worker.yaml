@@ -47,6 +47,7 @@ spec:
         - hostPath:
             path: /data1/alluxio/hdd
             type: DirectoryOrCreate
+          name: hdd
 #         - name: mem-0
 #           hostPath:
 #             path: /alluxio/mem

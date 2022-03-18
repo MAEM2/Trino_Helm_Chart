@@ -77,6 +77,8 @@ spec:
               name: config-volume
             - mountPath: {{ .Values.server.config.pathCatalog }}
               name: config-volume-hive
+            - name: alluxio-domain
+              mountPath: /opt/domain
           env:
             - name: JAVA_OPTS
               value: -Dcom.amazonaws.sdk.disableCertChecking=true
@@ -120,9 +122,9 @@ spec:
             requests:
               cpu: {{ .Values.resources.worker.requests.cpu }}
               memory: {{ .Values.resources.worker.requests.memory }}
-          volumeMounts:
-          - mountPath: /opt/domain
-            name: alluxio-domain
+#           volumeMounts:
+#           - mountPath: /opt/domain
+#             name: alluxio-domain
 #             - mountPath: /alluxio/data/mem
 #               name: mem-0
 #             - mountPath: /alluxio/data/hdd1

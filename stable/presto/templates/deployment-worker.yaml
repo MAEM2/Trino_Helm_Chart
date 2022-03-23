@@ -106,6 +106,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
+            - name: ALLUXIO_WORKER_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
           ports:
             - name: http
               containerPort: {{ .Values.server.config.http.port }}

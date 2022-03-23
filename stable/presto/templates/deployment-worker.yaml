@@ -102,6 +102,10 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.storagegrid.secret }}
                   key: s3-secret-key
+            - name: ALLUXIO_USER_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
           ports:
             - name: http
               containerPort: {{ .Values.server.config.http.port }}

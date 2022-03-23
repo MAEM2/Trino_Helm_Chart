@@ -10,6 +10,8 @@ metadata:
     component: coordinator
     microservice: trino-coordinator
 spec:
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
   selector:
     matchLabels:
       app: {{ template "trino.name" . }}
@@ -91,6 +93,14 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.storagegrid.secret }}
                   key: s3-secret-key
+            - name: ALLUXIO_WORKER_HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: ALLUXIO_USER_HOSTNAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: status.hostIP
           livenessProbe:
             httpGet:
               path: /v1/info

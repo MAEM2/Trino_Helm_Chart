@@ -137,54 +137,6 @@ spec:
               cpu: {{ .Values.resources.worker.requests.cpu }}
               memory: {{ .Values.resources.worker.requests.memory }}
 
-  {{ if .Values.exporters.jmx.enabled }}
-        - name: jmx-exporter
-          image: "{{ .Values.exporters.jmx.image.repository }}:{{ .Values.exporters.jmx.image.tag }}"
-          imagePullPolicy: {{ .Values.exporters.jmx.image.pullPolicy }}
-          ports:
-            - containerPort: {{ .Values.exporters.jmx.port }}
-              protocol: TCP
-              name: exporter
-          livenessProbe:
-            httpGet:
-              path: /metrics
-              port: exporter
-            initialDelaySeconds: 30
-            periodSeconds: 15
-            timeoutSeconds: 60
-            failureThreshold: 8
-            successThreshold: 1
-          readinessProbe:
-            httpGet:
-              path: /metrics
-              port: exporter
-            initialDelaySeconds: 30
-            periodSeconds: 15
-            timeoutSeconds: 60
-            failureThreshold: 8
-            successThreshold: 1
-          env:
-            - name: SERVICE_PORT
-              value: {{ .Values.exporters.jmx.port | quote }}
-            {{- with .Values.exporters.jmx.env }}
-            {{- range $key, $value := . }}
-            - name: {{ $key | upper | replace "." "_" }}
-              value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
-          resources:
-            limits:
-              cpu: {{ .Values.exporters.jmx.resources.worker.limits.cpu }}
-              memory: {{ .Values.exporters.jmx.resources.worker.limits.memory }}
-            requests:
-              cpu: {{ .Values.exporters.jmx.resources.worker.requests.cpu }}
-              memory: {{ .Values.exporters.jmx.resources.worker.requests.memory }}
-          volumeMounts:
-            - name: config-jmx-exporter
-              mountPath: /opt/jmx_exporter/config.yml
-              subPath: config.yml
-          {{- end }}
-
 #        alluxio container
         - name: trino-alluxio-worker
           image: {{ .Values.alluxio.image }}:{{ .Values.alluxio.imageTag }}

@@ -31,6 +31,7 @@ data:
     -Dcom.sun.management.jmxremote.ssl=false
     -Dcom.sun.management.jmxremote.port={{ .Values.server.jmx.registryPort }}
     -Dcom.sun.management.jmxremote.rmi.port={{ .Values.server.jmx.serverPort }}
+    -javaagent:/usr/lib/trino/lib/jmx_prometheus_javaagent-0.16.0.jar={{ .Values.exporters.jmx.port }}:{{ .Values.exporters.jmx.mountpath }}
     {{ end }}
     {{ range $value := .Values.server.jvm.additional_params }}
     {{ $value }}
@@ -47,8 +48,7 @@ data:
     query.max-memory={{ .Values.server.config.query.maxMemory }}
     query.max-total-memory={{ .Values.server.config.query.maxTotalMemory }}
     query.max-memory-per-node={{ .Values.server.config.query.maxMemoryPerNode }}
-    query.max-total-memory-per-node={{ .Values.server.config.query.maxTotalMemoryPerNode }}
-    discovery-server.enabled=true
+
     discovery.uri=http://localhost:{{ .Values.server.config.http.port }}
     {{ if .Values.server.config.https.enabled }}
     http-server.https.enabled=true
@@ -70,5 +70,27 @@ data:
   password-authenticator.properties: |
     password-authenticator.name=file
     file.password-file={{ .Values.passwordfile.filepath }}
+  access-control.properties: |
+    access-control.name=file
+    security.config-file=etc/rules.json
+    security.refresh-period=10s
+  rules.json: |
+    {
+     "catalogs": [
+        {
+          "user": "(trino)",
+          "catalog": "(hive|system)",
+          "allow": "all"
+        }
+     ],
+     "tables": [
+        {
+          "user": "test",
+          "catalog": "system",
+          "schema": "jdbc",
+          "privileges": ["SELECT"]
+        }
+     ]
+    }
 {{end}}
 ---

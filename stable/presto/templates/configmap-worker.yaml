@@ -32,6 +32,7 @@ data:
     -Dcom.sun.management.jmxremote.ssl=false
     -Dcom.sun.management.jmxremote.port={{ .Values.server.jmx.registryPort }}
     -Dcom.sun.management.jmxremote.rmi.port={{ .Values.server.jmx.serverPort }}
+    -javaagent:/usr/lib/trino/lib/jmx_prometheus_javaagent-0.16.0.jar={{ .Values.exporters.jmx.port }}:{{ .Values.exporters.jmx.mountpath }}
     {{ end }}
     {{ range $value := .Values.server.jvm.additional_params }}
     {{ $value }}
@@ -43,7 +44,7 @@ data:
     query.max-memory={{ .Values.server.config.query.maxMemory }}
     query.max-total-memory={{ .Values.server.config.query.maxTotalMemory }}
     query.max-memory-per-node={{ .Values.server.config.query.maxMemoryPerNode }}
-    query.max-total-memory-per-node={{ .Values.server.config.query.maxTotalMemoryPerNode }}
+
     discovery.uri=http://{{ template "trino.fullname" . }}:{{ .Values.server.config.http.port }}
 
     {{ if .Values.exporters.jmx.enabled }}

@@ -10,8 +10,6 @@ metadata:
     component: coordinator
     microservice: trino-coordinator
 spec:
-#   hostNetwork: true
-#   dnsPolicy: ClusterFirstWithHostNet
   selector:
     matchLabels:
       app: {{ template "trino.name" . }}
@@ -39,11 +37,6 @@ spec:
         - name: config-volume-hive
           configMap:
             name: {{ template "trino.hive" . }}
-        {{ if .Values.exporters.jmx.enabled }}
-        - name: config-jmx-exporter
-          configMap:
-            name: {{ template "trino.jmx-exporter" . }}
-        {{end}}
         {{ if .Values.server.config.https.enabled }}
         - name: keystore-volume
           secret:
@@ -66,11 +59,6 @@ spec:
               name: keystore-volume
             - mountPath: {{ .Values.passwordfile.mountpath }}
               name: passworddb-volume
-            {{end}}
-            {{ if .Values.exporters.jmx.enabled }}
-            - name: config-jmx-exporter
-              mountPath: {{ .Values.exporters.jmx.mountpath }}
-              subPath: config.yml
             {{end}}
           ports:
             - name: http

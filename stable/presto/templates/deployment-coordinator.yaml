@@ -127,7 +127,6 @@ spec:
               cpu: {{ .Values.resources.coordinator.requests.cpu }}
               memory: {{ .Values.resources.coordinator.requests.memory }}
 
-
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

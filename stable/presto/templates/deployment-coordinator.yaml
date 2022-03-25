@@ -10,8 +10,8 @@ metadata:
     component: coordinator
     microservice: trino-coordinator
 spec:
-  hostNetwork: true
-  dnsPolicy: ClusterFirstWithHostNet
+#   hostNetwork: true
+#   dnsPolicy: ClusterFirstWithHostNet
   selector:
     matchLabels:
       app: {{ template "trino.name" . }}
@@ -67,6 +67,11 @@ spec:
             - mountPath: {{ .Values.passwordfile.mountpath }}
               name: passworddb-volume
             {{end}}
+            {{ if .Values.exporters.jmx.enabled }}
+            - name: config-jmx-exporter
+              mountPath: {{ .Values.exporters.jmx.mountpath }}
+              subPath: config.yml
+            {{end}}
           ports:
             - name: http
               containerPort: {{ .Values.server.config.http.port }}
@@ -74,6 +79,11 @@ spec:
             {{ if .Values.server.config.https.enabled }}
             - name: https
               containerPort: {{ .Values.server.config.https.port }}
+              protocol: TCP
+            {{end}}
+            {{ if .Values.exporters.jmx.enabled }}
+            - name: exporter
+              containerPort: {{ .Values.exporters.jmx.port }}
               protocol: TCP
             {{end}}
           env:
@@ -117,53 +127,6 @@ spec:
               cpu: {{ .Values.resources.coordinator.requests.cpu }}
               memory: {{ .Values.resources.coordinator.requests.memory }}
 
-      {{ if .Values.exporters.jmx.enabled }}
-        - name: jmx-exporter
-          image: "{{ .Values.exporters.jmx.image.repository }}:{{ .Values.exporters.jmx.image.tag }}"
-          imagePullPolicy: {{ .Values.exporters.jmx.image.pullPolicy }}
-          ports:
-            - containerPort: {{ .Values.exporters.jmx.port }}
-              protocol: TCP
-              name: exporter
-          livenessProbe:
-            httpGet:
-              path: /metrics
-              port: exporter
-            initialDelaySeconds: 30
-            periodSeconds: 15
-            timeoutSeconds: 60
-            failureThreshold: 8
-            successThreshold: 1
-          readinessProbe:
-            httpGet:
-              path: /metrics
-              port: exporter
-            initialDelaySeconds: 30
-            periodSeconds: 15
-            timeoutSeconds: 60
-            failureThreshold: 8
-            successThreshold: 1
-          env:
-            - name: SERVICE_PORT
-              value: {{ .Values.exporters.jmx.port | quote }}
-            {{- with .Values.exporters.jmx.env }}
-            {{- range $key, $value := . }}
-            - name: {{ $key | upper | replace "." "_" }}
-              value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
-          resources:
-            limits:
-              cpu: {{ .Values.exporters.jmx.resources.coordinator.limits.cpu }}
-              memory: {{ .Values.exporters.jmx.resources.coordinator.limits.memory }}
-            requests:
-              cpu: {{ .Values.exporters.jmx.resources.coordinator.requests.cpu }}
-              memory: {{ .Values.exporters.jmx.resources.coordinator.requests.memory }}
-          volumeMounts:
-            - name: config-jmx-exporter
-              mountPath: /opt/jmx_exporter/config.yml
-              subPath: config.yml
-          {{- end }}
 
     {{- with .Values.nodeSelector }}
       nodeSelector:

@@ -69,11 +69,6 @@ spec:
               containerPort: {{ .Values.server.config.https.port }}
               protocol: TCP
             {{end}}
-            {{ if .Values.exporters.jmx.enabled }}
-            - name: exporter
-              containerPort: {{ .Values.exporters.jmx.port }}
-              protocol: TCP
-            {{end}}
           env:
             - name: JAVA_OPTS
               value: -Dcom.amazonaws.sdk.disableCertChecking=true

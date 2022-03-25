@@ -94,7 +94,7 @@ keystore:
   key: key
 exporters:
   jmx:
-    enabled: true
+    enabled: false
     image:
       repository: sscaling/jmx-prometheus-exporter
       tag: 0.3.0
